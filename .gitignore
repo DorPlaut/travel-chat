@@ -1,0 +1,18 @@
+# Node.js (Backend)
+api/node_modules/
+api/.env
+api/*.pem
+api/logs/
+api/debug.log
+
+# React (Frontend)
+travel-chat-react/node_modules/
+travel-chat-react/.env
+travel-chat-react/.env.local
+travel-chat-react/dist/    # React production build
+
+# Global Ignore
+.DS_Store
+*.log
+.env
+*.pem
