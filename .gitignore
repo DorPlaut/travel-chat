@@ -16,3 +16,4 @@ travel-chat-react/dist/    # React production build
 *.log
 .env
 *.pem
+
