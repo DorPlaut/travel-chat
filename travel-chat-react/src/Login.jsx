@@ -1,10 +1,11 @@
 import React from 'react';
 import { Box, Button, Typography } from '@mui/material';
+const serveUrl = import.meta.env.VITE_SERVER_URL;
 
 const Login = () => {
   const handleLoginClick = () => {
     // Redirect to the backend to start the OAuth flow
-    window.location.href = 'http://localhost:3000/api/auth/google';
+    window.location.href = `${serveUrl}/api/auth/google`;
   };
 
   return (
