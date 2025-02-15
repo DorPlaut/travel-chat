@@ -3,7 +3,7 @@ import { Box, Typography, CircularProgress } from '@mui/material';
 import { useNavigate } from 'react-router-dom';
 import { useUserStore } from '../store/userStore'; // Zustand store
 import axios from 'axios';
-const serverUrl = import.meta.env.VITE_SERVER_URL;
+const serveUrl = import.meta.env.VITE_SERVER_URL;
 
 const AuthSuccess = () => {
   const navigate = useNavigate();
@@ -17,7 +17,7 @@ const AuthSuccess = () => {
     if (userId) {
       // Fetch user data from backend
       axios
-        .get(`${serverUrl}/api/users/${userId}`, {
+        .get(`${serveUrl}/api/users/${userId}`, {
           withCredentials: true, // Send cookies automatically
         })
         .then((response) => {
