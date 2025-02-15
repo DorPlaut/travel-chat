@@ -107,8 +107,8 @@ export const logoutUser = (req, res) => {
     // Clear cookie
     res.clearCookie('auth_token', {
       httpOnly: true,
-      secure: process.env.NODE_ENV === 'production',
-      sameSite: 'Strict',
+      secure: process.env.NODE_ENV === 'production', // Use secure cookies in production
+      sameSite: enviorment === 'production' ? 'None' : 'Strict',
     });
     //
     console.log('Logged out successfully, cookie cleared');
