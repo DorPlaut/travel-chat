@@ -4,11 +4,13 @@ const serveUrl = import.meta.env.VITE_SERVER_URL;
 // Get user data using auth cookie
 export const getUserData = async () => {
   try {
+    console.log('auth find user req ', serveUrl);
     const response = await axios.get(`${serveUrl}/api/auth/me`, {
-      withCredentials: true, // Send cookies with the request
+      withCredentials: true, // Send cookies
     });
     if (response.data.user) {
       const userData = response.data.user;
+      console.log(response);
       return userData;
     } else {
       console.error('User data not found in the response');
