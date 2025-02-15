@@ -70,7 +70,8 @@ export const googleCallback = [
 
       // Redirect to frontend with token
       res.redirect(
-        `${process.env.FRONTEND_URL}/auth-success?token=${token}&id=${user.user_id}`
+        `${process.env.FRONTEND_URL}`
+        // `${process.env.FRONTEND_URL}/auth-success?token=${token}&id=${user.user_id}`
       );
     } catch (error) {
       console.error('Error during Google callback:', error);
