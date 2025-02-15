@@ -73,13 +73,17 @@ app.use(bodyParser.json({ limit: '50mb' }));
 app.use(cookieParser());
 
 // CORS settings
-const allowedOrigin =
-  env === 'production'
-    ? 'https://travel-chat.dorplaut.com'
-    : 'http://localhost:5173';
+// const allowedOrigin =
+//   env === 'production'
+//     ? 'https://travel-chat.dorplaut.com'
+//     : 'http://localhost:5173';
+const allowedOrigins = [
+  'http://localhost:5173', //local frontend
+  'https://travel-chat-eight.vercel.app', // deployed frontend on Vercel
+];
 app.use(
   cors({
-    origin: allowedOrigin,
+    origin: allowedOrigins,
     credentials: true, // Allow cookies to be sent with requests
   })
 );
