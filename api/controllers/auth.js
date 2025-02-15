@@ -64,7 +64,7 @@ export const googleCallback = [
       res.cookie('auth_token', token, {
         httpOnly: true,
         secure: process.env.NODE_ENV === 'production', // Use secure cookies in production
-        sameSite: 'Strict', // Prevent CSRF attacks
+        sameSite: 'None', // Prevent CSRF attacks
         maxAge: 1000 * 60 * 60 * 24 * 7, // 7 days
       });
 

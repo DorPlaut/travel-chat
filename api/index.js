@@ -84,7 +84,7 @@ const allowedOrigins = [
 app.use(
   cors({
     origin: allowedOrigins,
-    credentials: true, // Allow cookies to be sent with requests
+    credentials: true, // Allow cookies
   })
 );
 
