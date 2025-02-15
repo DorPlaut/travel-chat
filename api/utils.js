@@ -563,6 +563,46 @@ export const updateConversation = async (conversationId, updatedFields) => {
   }
 };
 
+// Remove conversation with the co responding trip and events
+export const removeConversation = async (conversationId) => {
+  try {
+    const conversation = await getConversationById(conversationId);
+    const tripId = conversation.trip_id;
+    const events = await getTripEvents(tripId);
+
+    // Step 1: Delete the conversation messages
+    const { error: messagesError } = await supabase
+      .from('chat_messages')
+      .delete()
+      .eq('conversation_id', conversationId);
+    if (messagesError) throw messagesError;
+
+    // Step 2: Delete the conversation
+    const { error: conversationError } = await supabase
+      .from('conversations')
+      .delete()
+      .eq('conversation_id', conversationId);
+
+    if (conversationError) throw conversationError;
+
+    // Step 3: Delete events (if they exist)
+    for (const event of events) {
+      await deleteEvent(tripId, event.event_id);
+    }
+
+    // Step 4: Delete the trip
+    const { error: tripError } = await deleteTrip(tripId);
+    if (tripError) throw tripError;
+
+    console.log('remove all successfully');
+
+    return true;
+  } catch (error) {
+    console.error('Error removing conversation:', error);
+    throw error;
+  }
+};
+
 //
 // HELPERS
 //

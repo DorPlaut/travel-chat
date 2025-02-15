@@ -8,6 +8,8 @@ const supabase = createClient(
   process.env.SUPABASE_KEY
 );
 
+const enviorment = process.env.NODE_ENV || 'development';
+
 // Google OAuth callback controller
 export const googleCallback = [
   passport.authenticate('google', {
@@ -64,7 +66,7 @@ export const googleCallback = [
       res.cookie('auth_token', token, {
         httpOnly: true,
         secure: process.env.NODE_ENV === 'production', // Use secure cookies in production
-        sameSite: 'None', // Prevent CSRF attacks
+        sameSite: enviorment === 'production' ? 'None' : 'Strict',
         maxAge: 1000 * 60 * 60 * 24 * 7, // 7 days
       });
 

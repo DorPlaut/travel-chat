@@ -15,14 +15,6 @@ const Login = () => {
         login
       </Button>
     </Box>
-    // <Button
-    //   variant="contained"
-    //   color="primary"
-    //   onClick={handleLoginClick}
-    //   sx={{ width: '200px' }}
-    // >
-    //   Login with Google
-    // </Button>
   );
 };
 

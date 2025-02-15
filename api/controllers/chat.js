@@ -18,6 +18,7 @@ import {
   getFullMessageHistory,
   cleanAndParseAIResponse,
   deleteEvent,
+  removeConversation,
 } from '../utils.js';
 import { createClient } from '@supabase/supabase-js';
 
@@ -437,6 +438,29 @@ export const getMessages = async (req, res) => {
     return res.status(200).json(messages);
   } catch (error) {
     console.error('Error in getMessages:', error);
+    return res.status(500).json({ error: 'Internal server error' });
+  }
+};
+
+export const deleteConversation = async (req, res) => {
+  try {
+    const { conversationId } = req.params;
+
+    // Validate required parameters
+    if (!conversationId) {
+      return res.status(400).json({
+        error: 'Missing required parameters. conversationId is required.',
+      });
+    }
+
+    // Delete the conversation
+    await removeConversation(conversationId);
+
+    return res
+      .status(200)
+      .json({ message: 'Conversation deleted successfully' });
+  } catch (error) {
+    console.error('Error in deleteConversation:', error);
     return res.status(500).json({ error: 'Internal server error' });
   }
 };

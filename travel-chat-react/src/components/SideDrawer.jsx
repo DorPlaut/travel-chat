@@ -10,19 +10,30 @@ import {
   Typography,
   Divider,
   Tooltip,
+  Button,
+  ListItemButton,
 } from '@mui/material';
 import MenuIcon from '@mui/icons-material/Menu';
+import ClearIcon from '@mui/icons-material/Clear';
 import ChatBubbleOutlineIcon from '@mui/icons-material/ChatBubbleOutline';
 import AddCommentOutlinedIcon from '@mui/icons-material/AddCommentOutlined';
 import HikingOutlinedIcon from '@mui/icons-material/HikingOutlined';
 import CalendarMonthOutlinedIcon from '@mui/icons-material/CalendarMonthOutlined';
 import { useChatsStore } from '../../store/chatsStore';
 import { Link } from 'react-router-dom';
+import { useSnackbar } from 'notistack';
+import { deleteConversation } from '../../utils/chatHandler';
+import { useUserStore } from '../../store/userStore';
 
 const SideDrawer = () => {
   // global state
-  const { conversations } = useChatsStore();
+  const { conversations, setConversations, getUserConversations } =
+    useChatsStore();
+  const { userData } = useUserStore();
   const [isOpen, setIsOpen] = useState(true);
+
+  // alerts
+  const { enqueueSnackbar, closeSnackbar } = useSnackbar();
 
   const toggleDrawer = () => {
     setIsOpen(!isOpen);
@@ -35,6 +46,45 @@ const SideDrawer = () => {
     }
 
     return title;
+  };
+
+  // delete conversation and trip
+  const handleDelete = (conversationId) => {
+    enqueueSnackbar(
+      'This will remove the chat, trip and all events related to it. Are you sure you want to proceed?',
+      {
+        variant: 'warning',
+        persist: true, // Keeps the alert open until user interacts
+        action: (snackbarId) => (
+          <>
+            <Button
+              onClick={async () => {
+                try {
+                  await deleteConversation(conversationId);
+                  closeSnackbar(snackbarId);
+                  // update global state
+                  await getUserConversations(userData.user_id);
+                  enqueueSnackbar('Conversation deleted successfully', {
+                    variant: 'success',
+                  });
+                } catch (error) {
+                  console.error('Error deleting conversation:', error);
+                  enqueueSnackbar('Error deleting conversation', {
+                    variant: 'error',
+                  });
+                }
+              }}
+              color="inherit"
+            >
+              Confirm
+            </Button>
+            <Button onClick={() => closeSnackbar(snackbarId)} color="inherit">
+              Cancel
+            </Button>
+          </>
+        ),
+      }
+    );
   };
 
   return (
@@ -171,6 +221,38 @@ const SideDrawer = () => {
                       <ListItemText primary={'No Title'} />
                     ))}
                 </Link>
+                {/* delete btn */}
+                {isOpen && (
+                  <ListItemButton
+                    onClick={() => {
+                      handleDelete(conversation.conversation_id);
+                    }}
+                    variant="contained"
+                    sx={{
+                      position: 'absolute',
+                      right: '0.25rem',
+                      borderRadius: '50%',
+                      width: '2rem',
+                      height: '2rem',
+                      display: 'flex',
+                      justifyContent: 'center',
+                      alignItems: 'center',
+                      '&:hover': {
+                        backgroundColor: 'Highlight',
+                      },
+                    }}
+                  >
+                    <ListItemIcon
+                      style={{
+                        display: 'flex',
+                        justifyContent: 'center',
+                        alignItems: 'center',
+                      }}
+                    >
+                      <ClearIcon />
+                    </ListItemIcon>
+                  </ListItemButton>
+                )}
               </ListItem>
             ))}
         </List>

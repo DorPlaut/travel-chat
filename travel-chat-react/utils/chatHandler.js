@@ -67,3 +67,19 @@ export const fetchMessages = async (conversationId) => {
     return null;
   }
 };
+
+// Delete conversation
+export const deleteConversation = async (conversationId) => {
+  try {
+    const response = await axios.delete(
+      `${serveUrl}/api/conversation/${conversationId}`,
+      {
+        withCredentials: true,
+      }
+    );
+    return true;
+  } catch (error) {
+    console.error('Error deleting conversation:', error);
+    return null;
+  }
+};

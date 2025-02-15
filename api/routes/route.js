@@ -1,6 +1,7 @@
 import express from 'express';
 import bodyParser from 'body-parser';
 import {
+  deleteConversation,
   getConversations,
   getCurrentConversation,
   getMessages,
@@ -37,6 +38,7 @@ router.route('/chat').post(jsonParser, handleMessage); // handle message - this 
 router.route('/chat/:userId').get(getConversations); // get all conversations for a user
 router.route('/messages/:conversationId').get(getMessages); // get all messages for a conversation
 router.route('/conversation/:conversationId').get(getCurrentConversation); // get all messages for a conversation
+router.route('/conversation/:conversationId').delete(deleteConversation); // Delete conversation, trip and events
 // trip routes
 router
   .route('/trips/:userId')

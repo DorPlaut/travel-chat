@@ -4,10 +4,14 @@ import { useUserStore } from '../store/userStore';
 import { getUserData, logOutUser } from '../utils/userHandler';
 import { Button, Typography, Box } from '@mui/material';
 import { useChatsStore } from '../store/chatsStore';
+import { useSnackbar } from 'notistack';
 
 const UserBtn = () => {
+  // global state
   const { userData, setUserData, clearUserData } = useUserStore();
   const { getUserConversations } = useChatsStore();
+  // alerts
+  const { enqueueSnackbar } = useSnackbar();
 
   useEffect(() => {
     const fetchUserData = async () => {
@@ -16,6 +20,9 @@ const UserBtn = () => {
         if (userData) {
           setUserData(userData);
           getUserConversations(userData.user_id);
+          enqueueSnackbar(`Welcome ${userData.user_name}!`, {
+            variant: 'success',
+          });
         } else {
           clearUserData();
         }
@@ -35,6 +42,7 @@ const UserBtn = () => {
       const logoutSuccess = await logOutUser();
       if (logoutSuccess) {
         clearUserData();
+        enqueueSnackbar('Logged out successfully', { variant: 'success' });
       }
     } catch (error) {
       console.error('Error during logout:', error);
