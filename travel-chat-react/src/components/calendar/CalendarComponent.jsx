@@ -18,8 +18,15 @@ import MonthView from './MonthView';
 import WeekView from './WeekView';
 import DayView from './DayView';
 import YearView from './YearView';
+import { useUserStore } from '../../../store/userStore';
+import { useDataStore } from '../../../store/dataStore';
 
-const CalendarComponent = ({ trips = [], events = [] }) => {
+const CalendarComponent = () => {
+  // global state
+  const { userData } = useUserStore();
+  const { trips, setTrips, getTrips, events, setEvents, getEvents } =
+    useDataStore();
+
   const [viewMode, setViewMode] = useState('month');
   const [currentDate, setCurrentDate] = useState(new Date());
   const isMobile = useMediaQuery((theme) => theme.breakpoints.down('sm'));

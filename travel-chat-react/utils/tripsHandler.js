@@ -47,6 +47,8 @@ export const fetchTripById = async (tripId) => {
 // Update trip data
 export const updateTrip = async (tripId, updateData) => {
   try {
+    console.log(tripId, updateData);
+
     const response = await axios.put(
       `${serveUrl}/api/trips/${tripId}`,
       updateData,

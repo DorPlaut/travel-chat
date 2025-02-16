@@ -1,9 +1,29 @@
 import { create } from 'zustand';
+import { fetchTrips } from '../utils/tripsHandler';
+import { fetchUserEvents } from '../utils/eventsHandler';
 
 export const useDataStore = create((set) => ({
-  products: [],
-  setProducts: (products) => set({ products }),
+  // Trips
+  trips: [],
+  setTrips: (products) => set({ products }),
 
-  isLoadingProducts: true,
-  setIsLoadingProducts: (isLoadingProducts) => set({ isLoadingProducts }),
+  getTrips: async (userId) => {
+    try {
+      const trips = await fetchTrips(userId);
+      set({ trips: trips });
+    } catch (error) {
+      console.error('Error fetching trips:', error);
+    }
+  },
+  // Events
+  events: [],
+  setEvents: (events) => set({ events }),
+  getEvents: async (userId) => {
+    try {
+      const events = await fetchUserEvents(userId);
+      set({ events: events });
+    } catch (error) {
+      console.error('Error fetching events:', error);
+    }
+  },
 }));

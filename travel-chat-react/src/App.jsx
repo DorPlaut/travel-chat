@@ -1,8 +1,7 @@
 import { BrowserRouter as Router, Route, Routes } from 'react-router-dom';
-import Login from './Login';
+import Login from './components/user/Login';
 import AuthSuccess from './AuthSuccess';
-import UserBtn from './UserBtn';
-import TripList from './components/TripList';
+import UserBtn from './components/user/UserBtn';
 import TripDetails from './components/TripDetails';
 import NewTrip from './components/NewTrip';
 import { createTheme, ThemeProvider } from '@mui/material/styles';

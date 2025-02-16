@@ -236,12 +236,18 @@ const DayView = ({ currentDate, trips, events }) => {
 
 export default DayView;
 
-// ... (icon imports remain the same)
+// specific event card for day view
 
 const EventCard = ({ event }) => {
   const eventType = event.event_type.toLowerCase();
   const backgroundColor = eventTypeColors[eventType] || '#9ca3af';
-  const { event_start_time, event_end_time, event_name } = event;
+  const {
+    event_start_time,
+    event_end_time,
+    event_name,
+    event_description,
+    event_location,
+  } = event;
 
   const timeString = () => {
     if (event_start_time && event_end_time) {
@@ -258,14 +264,16 @@ const EventCard = ({ event }) => {
         backgroundColor,
         color: 'white',
         borderRadius: 1,
-        p: 0.5,
+        p: 1,
+        pt: 1.5,
         display: 'flex',
-        alignItems: 'center',
-        fontSize: '0.8rem',
+        alignItems: 'flex-start',
         cursor: 'pointer',
-        '&:hover': { opacity: 0.9 },
+        opacity: 0.85,
+        '&:hover': { opacity: 1 },
         height: '100%',
         width: '100%',
+        transition: 'opacity 0.2s ease-in-out',
       }}
     >
       <Avatar
@@ -279,11 +287,20 @@ const EventCard = ({ event }) => {
         {eventTypeIcons[eventType]}
       </Avatar>
       <Box>
-        <Typography variant="caption" sx={{ display: 'block', lineHeight: 1 }}>
+        <Typography
+          variant="caption"
+          sx={{ fontSize: '1rem', display: 'block', lineHeight: 1 }}
+        >
           {timeString()}
         </Typography>
-        <Typography variant="caption" sx={{ fontWeight: 'bold' }}>
+        <Typography
+          variant="caption"
+          sx={{ fontSize: '1.5rem', display: 'block', fontWeight: 'bold' }}
+        >
           {event_name}
+        </Typography>
+        <Typography variant="caption" sx={{ fontSize: '0.9rem' }}>
+          {event_description} - {event_location}
         </Typography>
       </Box>
     </Box>

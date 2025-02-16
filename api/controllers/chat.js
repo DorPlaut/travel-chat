@@ -39,7 +39,7 @@ const supabase = createClient(
 export const handleMessage = async (req, res) => {
   try {
     const { userId, message, tripId, conversationId } = req.body;
-    console.log(userId, message, tripId, conversationId);
+    // console.log(userId, message, tripId, conversationId);
 
     let currentTripId = tripId;
 
@@ -115,12 +115,14 @@ Every response must be a valid JSON object:
 
 ### Progressive Information Gathering
 1. Start with minimal required information:
-   - For new trips: name and dates
+   - For new trips: destination and dates
    - For events: basic type and timing
    - For recommendations: primary preference only
 2. Build detail progressively through conversation
 3. Maximum 2 follow-up questions per response
 4. Provide initial recommendations with basic information, then refine
+5. listen to the user. if he dossent know how to answer, suggest ideas and help him plan the trip
+6. ultimately, the user is the customer and he's allways right. dont be stiff and roll with user to make him fill in control
 
 ### Context Management
 1. Track all previously provided information
@@ -177,12 +179,16 @@ Every response must be a valid JSON object:
    - Required: trip_id, event_id
    - Optional: All other event fields
 
+6. 'EVENT_DELETE'
+   - Required: trip_id, event_id
+
+
 ### User and Conversation Management
-6. 'PREF_UPDATE'
+7. 'PREF_UPDATE'
    - Required: user_id
    - Optional: user_name, user_currency, user_language, user_personalization
 
-7. 'CONVERSATION_UPDATE'
+8. 'CONVERSATION_UPDATE'
    - Required: conversation_id
    - Optional: conversation_title
 
@@ -218,8 +224,10 @@ Valid event types:
 
 3. For event additions:
    - Confirm received information
-   - Add event immediately if possible
+   - Only book events in the duration of the trip.
    - Request only missing required fields
+   - Make sure the trip timeline make sense and the user can get to all the evnets
+   - Never double book an event. if you encounter 2 events the occur simultaneity, if they are the same event double booked: get rid of one of the. if its 2 different events: consult with user which one to remove.
 
 ### Follow-up Responses
 1. When user provides information:
@@ -244,6 +252,10 @@ Valid event types:
 4. Keep conversation flowing
 5. Respond to user cues
 6. Balance structure with flexibility
+
+## Data Management
+- Check for double booked events and remove one of them living only one event.
+- Check for existing trips and events before creating new ones
 
 ## Error Handling
 1. Handle missing information gracefully

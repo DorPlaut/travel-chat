@@ -1,9 +1,9 @@
 import React, { useEffect } from 'react';
 import Login from './Login';
-import { useUserStore } from '../store/userStore';
-import { getUserData, logOutUser } from '../utils/userHandler';
+import { useUserStore } from '../../../store/userStore';
+import { getUserData, logOutUser } from '../../../utils/userHandler';
 import { Button, Typography, Box } from '@mui/material';
-import { useChatsStore } from '../store/chatsStore';
+import { useChatsStore } from '../../../store/chatsStore';
 import { useSnackbar } from 'notistack';
 
 const UserBtn = () => {

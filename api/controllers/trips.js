@@ -46,7 +46,8 @@ export const getTrip = async (req, res) => {
 // PUT controller to update a trip for a user
 export const updateTripData = async (req, res) => {
   const { tripId } = req.params;
-  const { tripData } = req.body;
+  const tripData = req.body;
+
   try {
     const updatedTrip = await updateTrip(tripId, tripData);
     res.status(200).json(updatedTrip);
