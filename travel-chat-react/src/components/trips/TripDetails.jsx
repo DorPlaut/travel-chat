@@ -4,13 +4,13 @@ import {
   fetchTripById,
   updateTrip,
   deleteTrip,
-} from '../../utils/tripsHandler';
+} from '../../../utils/tripsHandler';
 import {
   fetchEvents,
   addEvent,
   updateEvent,
   deleteEvent,
-} from '../../utils/eventsHandler';
+} from '../../../utils/eventsHandler';
 import {
   Box,
   Typography,
@@ -78,10 +78,7 @@ const TripDetails = () => {
     <Box>
       <Typography variant="h4">{trip.trip_name}</Typography>
       <Typography variant="subtitle1">{trip.trip_destination}</Typography>
-      <Typography variant="body1">
-        {trip.trip_start_date.toLocaleDateString()} -{' '}
-        {trip.trip_end_date.toLocaleDateString()}
-      </Typography>
+
       <Button variant="contained" onClick={handleUpdateTrip}>
         Update Trip
       </Button>
@@ -92,16 +89,6 @@ const TripDetails = () => {
       <Typography variant="h5" sx={{ marginTop: 2 }}>
         Events
       </Typography>
-      <List>
-        {events.map((event) => (
-          <ListItem key={event.id}>
-            <ListItemText
-              primary={event.event_name}
-              secondary={`${event.event_start_date.toLocaleDateString()} - ${event.event_end_date.toLocaleDateString()}`}
-            />
-          </ListItem>
-        ))}
-      </List>
 
       <Box sx={{ marginTop: 2 }}>
         <TextField

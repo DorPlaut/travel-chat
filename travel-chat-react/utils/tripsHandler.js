@@ -24,7 +24,7 @@ export const addTrip = async (userId, tripData) => {
         withCredentials: true,
       }
     );
-    return response.data;
+    return true;
   } catch (error) {
     console.error('Error adding trip:', error);
     return null;
@@ -56,7 +56,7 @@ export const updateTrip = async (tripId, updateData) => {
         withCredentials: true,
       }
     );
-    return response.data;
+    return true;
   } catch (error) {
     console.error('Error updating trip:', error);
     return null;
@@ -69,7 +69,7 @@ export const deleteTrip = async (tripId) => {
     const response = await axios.delete(`${serveUrl}/api/trips/${tripId}`, {
       withCredentials: true,
     });
-    return response.data;
+    return true;
   } catch (error) {
     console.error('Error deleting trip:', error);
     return null;

@@ -39,6 +39,7 @@ const Trips = () => {
     const success = await deleteTrip(tripId);
     if (success) {
       // handle delite
+      getTrips(userData.user_id);
       enqueueSnackbar('Trip deleted', { variant: 'success' });
     }
   };
@@ -60,18 +61,24 @@ const Trips = () => {
         </Box>
 
         <Grid container spacing={3}>
-          {trips.map((trip) => (
-            <Grid item xs={12} sm={6} md={4} key={trip.triplid}>
-              <TripCard
-                trip={trip}
-                onEdit={() => {
-                  setSelectedTrip(trip);
-                  setEditOpen(true);
-                }}
-                onDelete={handleDeleteTrip}
-              />
-            </Grid>
-          ))}
+          {trips.map((trip) => {
+            console.log(trip);
+
+            return (
+              <Grid item xs={12} sm={6} md={4} key={trip.trip_id}>
+                <TripCard
+                  trip={trip}
+                  onEdit={() => {
+                    setSelectedTrip(trip);
+                    setEditOpen(true);
+                  }}
+                  onDelete={() => {
+                    handleDeleteTrip(trip.trip_id);
+                  }}
+                />
+              </Grid>
+            );
+          })}
         </Grid>
 
         <EditTripDialog

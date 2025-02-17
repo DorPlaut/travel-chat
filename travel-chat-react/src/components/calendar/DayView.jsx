@@ -11,6 +11,7 @@ import {
 import { motion } from 'framer-motion';
 import { format, parseISO, isSameDay, isWithinInterval } from 'date-fns';
 import { eventTypeColors, eventTypeIcons, formatTime } from './EventCard';
+import { useNavigate } from 'react-router-dom';
 
 const DayView = ({ currentDate, trips, events }) => {
   const theme = useTheme();
@@ -247,6 +248,7 @@ const EventCard = ({ event }) => {
     event_name,
     event_description,
     event_location,
+    trip_id,
   } = event;
 
   const timeString = () => {
@@ -256,6 +258,12 @@ const EventCard = ({ event }) => {
       return formatTime(event_start_time);
     }
     return '';
+  };
+
+  const navigate = useNavigate();
+  const handleGoToTripPage = () => {
+    const tripId = trip_id;
+    navigate(`/trips/${tripId}?search=${event_name}`);
   };
 
   return (
@@ -275,6 +283,7 @@ const EventCard = ({ event }) => {
         width: '100%',
         transition: 'opacity 0.2s ease-in-out',
       }}
+      onClick={handleGoToTripPage}
     >
       <Avatar
         sx={{

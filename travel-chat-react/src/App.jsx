@@ -2,7 +2,6 @@ import { BrowserRouter as Router, Route, Routes } from 'react-router-dom';
 import Login from './components/user/Login';
 import AuthSuccess from './AuthSuccess';
 import UserBtn from './components/user/UserBtn';
-import TripDetails from './components/TripDetails';
 import NewTrip from './components/NewTrip';
 import { createTheme, ThemeProvider } from '@mui/material/styles';
 import { Box, CssBaseline, AppBar, Toolbar, Typography } from '@mui/material';
@@ -11,6 +10,7 @@ import Chat from './pages/Chat';
 import Calendar from './pages/Calendar';
 import Trips from './pages/Trips';
 import { SnackbarProvider, useSnackbar } from 'notistack';
+import TripDetailsPage from './pages/TripDetailsPage';
 
 const theme = createTheme({
   palette: {
@@ -95,7 +95,7 @@ function App() {
                   <Route path="/login" element={<Login />} />
                   <Route path="/auth-success" element={<AuthSuccess />} />
                   <Route path="/trips" element={<Trips />} />
-                  <Route path="/trips/:tripId" element={<TripDetails />} />
+                  <Route path="/trips/:tripId" element={<TripDetailsPage />} />
                   <Route path="/trips/new" element={<NewTrip />} />
                   <Route path="/calendar" element={<Calendar />} />
 

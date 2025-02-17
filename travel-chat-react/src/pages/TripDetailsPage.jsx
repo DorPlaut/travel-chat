@@ -1,4 +1,3 @@
-// TripDetailsPage.jsx
 import { useEffect, useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { useSnackbar } from 'notistack';
@@ -7,36 +6,122 @@ import {
   Box,
   Button,
   Container,
-  Grid,
-  IconButton,
   Typography,
+  IconButton,
+  Divider,
 } from '@mui/material';
 import ArrowBackIcon from '@mui/icons-material/ArrowBack';
 import AddIcon from '@mui/icons-material/Add';
-import EventCard from './EventCard';
-import EventCardEnhanced from './EventCardEnhanced';
-import { fetchTripById, fetchEvents } from '../utils/tripsApi';
-import EditEventDialog from './EditEventDialog';
+import { useDataStore } from '../../store/dataStore';
+import EventDetailsCard from '../components/trips/EventDetailsCard';
+import EditEventDialog from '../components/trips/EditEventDialog';
+import { useUserStore } from '../../store/userStore';
+import { format, parse } from 'date-fns';
+import SearchFilters from '../components/trips/SearchFilters';
 
-const TripDetailsPage = ({ userId }) => {
-  const { triplid } = useParams();
+const TripDetailsPage = () => {
+  const { tripId } = useParams();
   const navigate = useNavigate();
   const { enqueueSnackbar } = useSnackbar();
-  const [trip, setTrip] = useState(null);
-  const [events, setEvents] = useState([]);
-  const [selectedEvent, setSelectedEvent] = useState(null);
+  const { userData } = useUserStore();
+  const { trips, getTrips, events, getEvents } = useDataStore();
   const [editOpen, setEditOpen] = useState(false);
-
-  const loadData = async () => {
-    const tripData = await fetchTripById(triplid);
-    const eventsData = await fetchEvents(triplid);
-    if (tripData) setTrip(tripData);
-    if (eventsData) setEvents(eventsData);
-  };
+  const [selectedEvent, setSelectedEvent] = useState(null);
+  const [currentTrip, setCurrentTrip] = useState('');
+  const [tripEvents, setTripEvents] = useState([]);
 
   useEffect(() => {
-    loadData();
-  }, [triplid]);
+    if (userData?.user_id) {
+      getTrips(userData.user_id);
+      getEvents(userData.user_id);
+    }
+  }, [userData]);
+
+  useEffect(() => {
+    if (trips.length > 0) {
+      const currentTrip = trips.find((t) => t.trip_id.toString() === tripId);
+      setCurrentTrip(currentTrip);
+    }
+  }, [trips]);
+
+  useEffect(() => {
+    if (currentTrip?.trip_id) {
+      const tripEvents = events.filter(
+        (e) => e.trip_id === currentTrip.trip_id
+      );
+      tripEvents.sort((a, b) => {
+        const dateA = new Date(`${a.event_start_date} ${a.event_start_time}`);
+        const dateB = new Date(`${b.event_start_date} ${b.event_start_time}`);
+        return dateA - dateB;
+      });
+      setTripEvents(tripEvents);
+    }
+  }, [currentTrip, events]);
+
+  // Handle search and filter
+  const filterEvents = (events, filters) => {
+    return events.filter((event) => {
+      const matchesSearch =
+        !filters.search ||
+        event.event_name.toLowerCase().includes(filters.search.toLowerCase()) ||
+        event.event_description
+          ?.toLowerCase()
+          .includes(filters.search.toLowerCase()) ||
+        event.event_location
+          ?.toLowerCase()
+          .includes(filters.search.toLowerCase());
+
+      const matchesType = !filters.type || event.event_type === filters.type;
+
+      const matchesDate =
+        !filters.date ||
+        format(
+          parse(event.event_start_date, 'yyyy-MM-dd', new Date()),
+          'yyyy-MM-dd'
+        ) === format(filters.date, 'yyyy-MM-dd');
+
+      return matchesSearch && matchesType && matchesDate;
+    });
+  };
+
+  // Update your tripEvents state handling
+  const [filteredEvents, setFilteredEvents] = useState([]);
+
+  useEffect(() => {
+    if (currentTrip?.trip_id) {
+      const tripEvents = events.filter(
+        (e) => e.trip_id === currentTrip.trip_id
+      );
+      tripEvents.sort((a, b) => {
+        const dateA = new Date(`${a.event_start_date} ${a.event_start_time}`);
+        const dateB = new Date(`${b.event_start_date} ${b.event_start_time}`);
+        return dateA - dateB;
+      });
+      setTripEvents(tripEvents);
+      setFilteredEvents(tripEvents);
+    }
+  }, [currentTrip, events]);
+
+  //  Create section deviders
+  const groupedEvents = filteredEvents.reduce((acc, event) => {
+    const dateKey = format(
+      parse(event.event_start_date, 'yyyy-MM-dd', new Date()),
+      'EEEE, MMMM d, yyyy'
+    );
+    if (!acc[dateKey]) acc[dateKey] = [];
+    acc[dateKey].push(event);
+    return acc;
+  }, {});
+
+  // create date range string
+  const tripDates = () => {
+    if (currentTrip?.trip_start_date) {
+      return `${format(
+        new Date(currentTrip?.trip_start_date),
+        'MMMM d'
+      )} - ${format(new Date(currentTrip?.trip_end_date), 'MMMM d, yyyy')}`;
+    }
+  };
 
   return (
     <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }}>
@@ -45,12 +130,36 @@ const TripDetailsPage = ({ userId }) => {
           <IconButton onClick={() => navigate(-1)} sx={{ mr: 2 }}>
             <ArrowBackIcon />
           </IconButton>
-          <Typography variant="h4" fontWeight="600">
-            {trip?.trip_name}
-          </Typography>
+          <Box>
+            <Typography variant="h4" fontWeight="600">
+              {currentTrip?.trip_name}
+            </Typography>
+            <Typography variant="caption" fontWeight="600">
+              {tripDates()}
+            </Typography>
+            <Typography variant="subtitle1" color="text.secondary">
+              {currentTrip?.trip_destination}
+            </Typography>
+          </Box>
         </Box>
 
-        <Box sx={{ mb: 4 }}>
+        <Box
+          sx={{
+            display: 'flex',
+            justifyContent: 'space-between',
+            alignItems: 'center',
+            mb: 3,
+          }}
+        >
+          <Typography variant="h6" color="text.secondary">
+            Trip Events
+          </Typography>
+          <SearchFilters
+            currentTrip={currentTrip}
+            onFilterChange={(filters) => {
+              setFilteredEvents(filterEvents(tripEvents, filters));
+            }}
+          />
           <Button
             variant="contained"
             startIcon={<AddIcon />}
@@ -60,19 +169,33 @@ const TripDetailsPage = ({ userId }) => {
           </Button>
         </Box>
 
-        <Grid container spacing={2}>
-          {events.map((event) => (
-            <Grid item xs={12} sm={6} md={4} key={event.event_id}>
-              <EventCardEnhanced
-                event={event}
-                onClick={() => {
-                  setSelectedEvent(event);
-                  setEditOpen(true);
-                }}
-              />
-            </Grid>
-          ))}
-        </Grid>
+        {Object.keys(groupedEvents).length === 0 ? (
+          <Box sx={{ textAlign: 'center', py: 4 }}>
+            <Typography variant="body1" color="text.secondary">
+              No events planned yet. Add your first event!
+            </Typography>
+          </Box>
+        ) : (
+          Object.entries(groupedEvents).map(([date, events]) => (
+            <Box key={date} sx={{ mb: 3 }}>
+              <Typography variant="h6" sx={{ mb: 1 }}>
+                {date}
+              </Typography>
+              <Divider sx={{ mb: 2 }} />
+              {events.map((event) => (
+                <EventDetailsCard
+                  key={event.event_id}
+                  event={event}
+                  tripId={tripId}
+                  onEdit={() => {
+                    setSelectedEvent(event);
+                    setEditOpen(true);
+                  }}
+                />
+              ))}
+            </Box>
+          ))
+        )}
 
         <EditEventDialog
           open={editOpen}
@@ -81,13 +204,15 @@ const TripDetailsPage = ({ userId }) => {
             setSelectedEvent(null);
           }}
           event={selectedEvent}
-          tripId={triplid}
+          tripId={tripId}
           onSave={() => {
-            loadData();
+            getEvents(tripId);
             enqueueSnackbar(selectedEvent ? 'Event updated' : 'Event created', {
               variant: 'success',
+              autoHideDuration: 3000,
             });
           }}
+          currentTrip={currentTrip}
         />
       </Container>
     </motion.div>

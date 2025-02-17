@@ -23,6 +23,7 @@ export const fetchUserEvents = async (userId) => {
         withCredentials: true,
       }
     );
+
     return response.data;
   } catch (error) {
     console.error('Error fetching user events:', error);
@@ -73,7 +74,7 @@ export const deleteEvent = async (tripId, eventId) => {
         withCredentials: true,
       }
     );
-    return response.data;
+    return true;
   } catch (error) {
     console.error('Error deleting event:', error);
     return null;

@@ -21,7 +21,7 @@ export const getTrips = async (req, res) => {
 // POST controller to add a trip for a user
 export const addTrip = async (req, res) => {
   const { userId } = req.params;
-  const { tripData } = req.body;
+  const tripData = req.body;
   try {
     const newTrip = await createTrip(userId, tripData);
     res.status(201).json(newTrip);

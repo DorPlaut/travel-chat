@@ -11,17 +11,26 @@ import {
   Typography,
   Menu,
   MenuItem,
+  Button,
 } from '@mui/material';
 import EditIcon from '@mui/icons-material/Edit';
 import DeleteIcon from '@mui/icons-material/Delete';
 import MoreVertIcon from '@mui/icons-material/MoreVert';
-import { eventTypeIcons, eventTypeColors, formatTime } from './EventCard';
-import { useDataStore } from '../store/dataStore';
+import CalendarMonthOutlinedIcon from '@mui/icons-material/CalendarMonthOutlined';
+
+import {
+  eventTypeIcons,
+  eventTypeColors,
+  formatTime,
+} from '../calendar/EventCard';
 import { deleteEvent } from '../../../utils/eventsHandler';
+import { useDataStore } from '../../../store/dataStore';
+import { useUserStore } from '../../../store/userStore';
 
 const EventDetailsCard = ({ event, tripId, onEdit }) => {
+  const { userData } = useUserStore();
+  const { trips, getTrips, events, getEvents } = useDataStore();
   const { enqueueSnackbar } = useSnackbar();
-  const { getEvents } = useDataStore();
   const [anchorEl, setAnchorEl] = useState(null);
   const open = Boolean(anchorEl);
 
@@ -31,7 +40,7 @@ const EventDetailsCard = ({ event, tripId, onEdit }) => {
   const handleDelete = async () => {
     const success = await deleteEvent(tripId, event.event_id);
     if (success) {
-      await getEvents(tripId);
+      await getEvents(userData.user_id);
       enqueueSnackbar('Event deleted', { variant: 'success' });
     }
     handleMenuClose();
@@ -69,6 +78,19 @@ const EventDetailsCard = ({ event, tripId, onEdit }) => {
             <IconButton size="small" onClick={handleMenuOpen}>
               <MoreVertIcon fontSize="small" />
             </IconButton>
+            <Button
+              startIcon={<CalendarMonthOutlinedIcon />}
+              variant="outlined"
+              onClick={() => {}}
+              sx={{
+                position: 'absolute',
+                right: '1rem',
+                bottom: '1rem',
+                fontSize: '0.8rem',
+              }}
+            >
+              Show calendar
+            </Button>
           </Box>
 
           <Box sx={{ ml: 4.5, mt: 1 }}>

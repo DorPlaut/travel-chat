@@ -25,6 +25,7 @@ const EditEventDialog = ({
   event: currentEvent,
   tripId,
   onSave,
+  currentTrip,
 }) => {
   const { enqueueSnackbar } = useSnackbar();
   const { getEvents } = useDataStore();
@@ -51,7 +52,34 @@ const EditEventDialog = ({
     }
   }, [currentEvent]);
 
+  const handleChange = (field, value) => {
+    setFormData((prev) => {
+      let updated = { ...prev, [field]: value };
+      if (field === 'event_start_date') {
+        updated.event_end_date = value;
+      }
+      if (field === 'event_start_time') {
+        const [hours, minutes] = value.split(':').map(Number);
+        updated.event_end_time = `${String((hours + 1) % 24).padStart(
+          2,
+          '0'
+        )}:${String(minutes).padStart(2, '0')}`;
+      }
+      return updated;
+    });
+  };
+
   const handleSubmit = async () => {
+    const { event_start_date, event_end_date } = formData;
+    if (
+      event_start_date < currentTrip.trip_start_date ||
+      event_end_date > currentTrip.trip_end_date
+    ) {
+      enqueueSnackbar('Event must be within the trip dates', {
+        variant: 'error',
+      });
+      return;
+    }
     try {
       if (currentEvent) {
         await updateEvent(tripId, currentEvent.event_id, formData);
@@ -83,12 +111,19 @@ const EditEventDialog = ({
       <DialogContent sx={{ pt: 2 }}>
         <div className="grid grid-cols-2 gap-4">
           <TextField
+            label="Event Name"
+            value={formData.event_name}
+            onChange={(e) => handleChange('event_name', e.target.value)}
+            fullWidth
+            margin="normal"
+            required
+            error={!formData.event_name}
+          />
+          <TextField
             select
             label="Event Type"
             value={formData.event_type}
-            onChange={(e) =>
-              setFormData({ ...formData, event_type: e.target.value })
-            }
+            onChange={(e) => handleChange('event_type', e.target.value)}
             fullWidth
             margin="normal"
           >
@@ -102,49 +137,55 @@ const EditEventDialog = ({
               </MenuItem>
             ))}
           </TextField>
-
-          <TextField
-            label="Event Name"
-            value={formData.event_name}
-            onChange={(e) =>
-              setFormData({ ...formData, event_name: e.target.value })
-            }
-            fullWidth
-            margin="normal"
-            required
-          />
-
           <TextField
             label="Start Date"
             type="date"
             InputLabelProps={{ shrink: true }}
             value={formData.event_start_date}
-            onChange={(e) =>
-              setFormData({ ...formData, event_start_date: e.target.value })
-            }
+            onChange={(e) => handleChange('event_start_date', e.target.value)}
             fullWidth
             margin="normal"
+            required
+            error={!formData.event_start_date}
           />
-
+          <TextField
+            label="End Date"
+            type="date"
+            InputLabelProps={{ shrink: true }}
+            value={formData.event_end_date}
+            onChange={(e) => handleChange('event_end_date', e.target.value)}
+            fullWidth
+            margin="normal"
+            required
+            error={!formData.event_end_date}
+          />
           <TextField
             label="Start Time"
             type="time"
             InputLabelProps={{ shrink: true }}
             value={formData.event_start_time}
-            onChange={(e) =>
-              setFormData({ ...formData, event_start_time: e.target.value })
-            }
+            onChange={(e) => handleChange('event_start_time', e.target.value)}
             fullWidth
             margin="normal"
+            required
+            error={!formData.event_start_time}
           />
-
+          <TextField
+            label="End Time"
+            type="time"
+            InputLabelProps={{ shrink: true }}
+            value={formData.event_end_time}
+            onChange={(e) => handleChange('event_end_time', e.target.value)}
+            fullWidth
+            margin="normal"
+            required
+            error={!formData.event_end_time}
+          />
           <TextField
             label="Cost"
             type="number"
             value={formData.event_cost}
-            onChange={(e) =>
-              setFormData({ ...formData, event_cost: e.target.value })
-            }
+            onChange={(e) => handleChange('event_cost', e.target.value)}
             fullWidth
             margin="normal"
             InputProps={{
@@ -153,23 +194,24 @@ const EditEventDialog = ({
               ),
             }}
           />
-
           <TextField
-            label="Location"
-            value={formData.event_location}
-            onChange={(e) =>
-              setFormData({ ...formData, event_location: e.target.value })
-            }
+            label="Currency"
+            value={formData.event_currency}
+            onChange={(e) => handleChange('event_currency', e.target.value)}
             fullWidth
             margin="normal"
           />
-
+          <TextField
+            label="Location"
+            value={formData.event_location}
+            onChange={(e) => handleChange('event_location', e.target.value)}
+            fullWidth
+            margin="normal"
+          />
           <TextField
             label="Description"
             value={formData.event_description}
-            onChange={(e) =>
-              setFormData({ ...formData, event_description: e.target.value })
-            }
+            onChange={(e) => handleChange('event_description', e.target.value)}
             multiline
             rows={3}
             fullWidth

@@ -7,45 +7,41 @@ const MonthView = ({ currentDate, trips, events, onDayClick }) => {
 
   const calendarDays = useMemo(() => {
     const start = new Date(
-      Date.UTC(currentDate.getFullYear(), currentDate.getMonth(), 1)
+      currentDate.getFullYear(),
+      currentDate.getMonth(),
+      1
     );
     const end = new Date(
-      Date.UTC(currentDate.getFullYear(), currentDate.getMonth() + 1, 0)
+      currentDate.getFullYear(),
+      currentDate.getMonth() + 1,
+      0
     );
 
-    // Previous month days (UTC)
-    const prevMonthDays = Array.from(
-      { length: start.getUTCDay() },
-      (_, i) =>
-        new Date(
-          Date.UTC(
-            start.getUTCFullYear(),
-            start.getUTCMonth(),
-            i - start.getUTCDay() + 1
-          )
-        )
-    );
+    // Previous month days (local)
+    const prevMonthDays = Array.from({ length: start.getDay() }, (_, i) => {
+      const date = new Date(start);
+      date.setDate(date.getDate() - (start.getDay() - i));
+      return date;
+    });
 
-    // Current month days (UTC)
+    // Current month days (local)
     const currentMonthDays = Array.from(
-      { length: end.getUTCDate() },
-      (_, i) =>
-        new Date(
-          Date.UTC(
-            currentDate.getUTCFullYear(),
-            currentDate.getUTCMonth(),
-            i + 1
-          )
-        )
+      { length: end.getDate() },
+      (_, i) => new Date(start.getFullYear(), start.getMonth(), i + 1)
     );
 
-    // Next month days (UTC)
+    // Next month days (local)
     const totalCells =
       Math.ceil((prevMonthDays.length + currentMonthDays.length) / 7) * 7;
+    const nextMonthDaysLength =
+      totalCells - (prevMonthDays.length + currentMonthDays.length);
     const nextMonthDays = Array.from(
-      { length: totalCells - (prevMonthDays.length + currentMonthDays.length) },
-      (_, i) =>
-        new Date(Date.UTC(end.getUTCFullYear(), end.getUTCMonth() + 1, i + 1))
+      { length: nextMonthDaysLength },
+      (_, i) => {
+        const date = new Date(end);
+        date.setDate(end.getDate() + i + 1);
+        return date;
+      }
     );
 
     return [...prevMonthDays, ...currentMonthDays, ...nextMonthDays];
