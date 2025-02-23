@@ -71,7 +71,7 @@ const TripCard = ({ trip, onEdit, onDelete }) => {
           </MenuItem>
           <MenuItem
             onClick={() => {
-              onDelete(trip.trip_id);
+              onDelete();
               handleClose();
             }}
           >

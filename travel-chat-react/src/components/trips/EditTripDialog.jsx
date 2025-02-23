@@ -13,10 +13,28 @@ import { motion } from 'framer-motion';
 
 import { useDataStore } from '../../../store/dataStore';
 import { addTrip, updateTrip } from '../../../utils/tripsHandler';
+import { useChatsStore } from '../../../store/chatsStore';
+import { useUserStore } from '../../../store/userStore';
 
 const EditTripDialog = ({ open, onClose, trip, userId }) => {
   const { enqueueSnackbar } = useSnackbar();
-  const { getTrips } = useDataStore();
+  // global state
+  const { userData } = useUserStore();
+  const { conversations, getUserConversations } = useChatsStore();
+  const { trips, getTrips, events, getEvents, setTrips, setEvents } =
+    useDataStore();
+
+  const handleData = async () => {
+    if (userData?.user_id) {
+      await getTrips(userData.user_id);
+      await getEvents(userData.user_id);
+      await getUserConversations(userData.user_id);
+    } else {
+      setTrips([]);
+      setEvents([]);
+    }
+  };
+  // form data
   const [formData, setFormData] = useState({
     trip_name: '',
     trip_destination: '',
@@ -52,8 +70,10 @@ const EditTripDialog = ({ open, onClose, trip, userId }) => {
     try {
       if (trip) {
         await updateTrip(trip.trip_id, formData);
+        await handleData();
       } else {
         await addTrip(userId, formData);
+        await handleData();
       }
       await getTrips(userId);
       onClose();

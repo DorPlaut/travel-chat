@@ -295,8 +295,6 @@ Valid event types:
 - currentDate: ${currentDate}
 - messageHistory: ${JSON.stringify(messageHistory, null, 2)}`;
 
-    console.log(prompt);
-
     // 3. Get AI response
 
     const result = await model.generateContent(prompt);

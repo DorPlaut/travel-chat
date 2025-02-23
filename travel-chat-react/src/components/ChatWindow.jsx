@@ -37,6 +37,19 @@ const ChatWindow = ({ paramsConversationId }) => {
   const messagesEndRef = useRef(null);
 
   /**
+   * update all data
+   */
+  const handleData = async () => {
+    if (userData?.user_id) {
+      await getTrips(userData.user_id);
+      await getEvents(userData.user_id);
+      await getUserConversations(userData.user_id);
+    } else {
+      setTrips([]);
+      setEvents([]);
+    }
+  };
+  /**
    * Scrolls to the bottom of the chat.
    */
   const scrollToBottom = () => {
@@ -107,9 +120,7 @@ const ChatWindow = ({ paramsConversationId }) => {
 
       // Fetch trips and events when AI take actions
       if (aiResponse.executedActions?.length > 0) {
-        console.log('update');
-        getTrips(userData.user_id);
-        getEvents(userData.user_id);
+        handleData();
       }
 
       // Add AI response to the chat

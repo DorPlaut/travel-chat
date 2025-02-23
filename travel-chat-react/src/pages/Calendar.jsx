@@ -3,17 +3,19 @@ import React, { useEffect } from 'react';
 import { useUserStore } from '../../store/userStore';
 import CalendarComponent from '../components/calendar/CalendarComponent';
 import { useDataStore } from '../../store/dataStore';
+import { useChatsStore } from '../../store/chatsStore';
 
 const Calendar = () => {
   // global state
   const { userData } = useUserStore();
   const { getTrips, getEvents, setTrips, setEvents } = useDataStore();
-
+  const { getUserConversations } = useChatsStore();
   //   use effect
-  const handleData = () => {
+  const handleData = async () => {
     if (userData?.user_id) {
-      getTrips(userData.user_id);
-      getEvents(userData.user_id);
+      await getTrips(userData.user_id);
+      await getEvents(userData.user_id);
+      await getUserConversations(userData.user_id);
     } else {
       setTrips([]);
       setEvents([]);
@@ -21,10 +23,10 @@ const Calendar = () => {
   };
   //   use effect
   useEffect(() => {
-    handleData;
+    handleData();
   }, [userData]);
   useEffect(() => {
-    handleData;
+    handleData();
   }, []);
 
   return <CalendarComponent />;

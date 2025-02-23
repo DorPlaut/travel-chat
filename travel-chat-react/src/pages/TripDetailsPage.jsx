@@ -38,11 +38,11 @@ const TripDetailsPage = () => {
     date: null,
   });
 
-  const handleData = () => {
+  const handleData = async () => {
     if (userData?.user_id) {
-      getTrips(userData.user_id);
-      getEvents(userData.user_id);
-      getUserConversations(userData.user_id);
+      await getTrips(userData.user_id);
+      await getEvents(userData.user_id);
+      await getUserConversations(userData.user_id);
     } else {
       setTrips([]);
       setEvents([]);
@@ -50,10 +50,10 @@ const TripDetailsPage = () => {
   };
   //   use effect
   useEffect(() => {
-    handleData;
+    handleData();
   }, [userData]);
   useEffect(() => {
-    handleData;
+    handleData();
   }, []);
 
   useEffect(() => {
@@ -136,7 +136,7 @@ const TripDetailsPage = () => {
     <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }}>
       <Container maxWidth="lg" sx={{ py: 4 }}>
         <Box sx={{ display: 'flex', alignItems: 'center', mb: 4 }}>
-          <IconButton onClick={() => navigate(-1)} sx={{ mr: 2 }}>
+          <IconButton onClick={() => navigate('/trips')} sx={{ mr: 2 }}>
             <ArrowBackIcon />
           </IconButton>
           <Box>
