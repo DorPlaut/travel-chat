@@ -61,7 +61,14 @@ const ChatWindow = ({ paramsConversationId }) => {
    */
   const populateMessages = async () => {
     if (!paramsConversationId) {
-      setMessages([]);
+      setMessages([
+        {
+          role: 'assistant',
+          content: `**Hey there!** 👋\n\nI’m your AI travel assistant, here to help you plan the perfect trip. Whether it’s a weekend getaway or a dream vacation, I’ve got you covered!\n\nLet’s get started - where would you like to go, and when? 🌍✈️
+`,
+          timestamp: new Date(),
+        },
+      ]);
       setConversationId(null);
       setConversationTitle('New conversation');
       setTripId(null);

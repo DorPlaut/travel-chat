@@ -12,6 +12,7 @@ import {
   Tooltip,
   Button,
   ListItemButton,
+  useMediaQuery,
 } from '@mui/material';
 import MenuIcon from '@mui/icons-material/Menu';
 import ClearIcon from '@mui/icons-material/Clear';
@@ -54,6 +55,15 @@ const SideDrawer = () => {
     }
   };
 
+  /**
+   * Toggles the drawer's open/close state on mobile devices.
+   */
+  const isMobile = useMediaQuery('(max-width:600px)', { noSsr: true });
+
+  // Optional: Auto-close/open when screen size changes
+  useEffect(() => {
+    setIsOpen(!isMobile);
+  }, [isMobile]);
   /**
    * Toggles the drawer's open/close state.
    */
