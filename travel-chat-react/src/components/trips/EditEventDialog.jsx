@@ -16,6 +16,7 @@ import { useDataStore } from '../../../store/dataStore';
 
 import { eventTypeIcons, eventTypeColors } from '../calendar/EventCard';
 import { addEvent, updateEvent } from '../../../utils/eventsHandler';
+import { useUserStore } from '../../../store/userStore';
 
 const eventTypes = Object.keys(eventTypeIcons);
 
@@ -29,6 +30,7 @@ const EditEventDialog = ({
 }) => {
   const { enqueueSnackbar } = useSnackbar();
   const { getEvents } = useDataStore();
+  const { userData } = useUserStore();
   const [formData, setFormData] = useState({
     event_name: '',
     event_type: 'other',
@@ -38,19 +40,38 @@ const EditEventDialog = ({
     event_end_date: '',
     event_end_time: '',
     event_location: '',
-    event_cost: '',
+    event_cost: null,
     event_currency: 'USD',
   });
 
+  const cleanFormData = () => {
+    setFormData({
+      event_name: '',
+      event_type: 'other',
+      event_description: '',
+      event_start_date: '',
+      event_start_time: '',
+      event_end_date: '',
+      event_end_time: '',
+      event_location: '',
+      event_cost: null,
+      event_currency: 'USD',
+    });
+  };
+
   useEffect(() => {
-    if (currentEvent) {
-      setFormData({
-        ...currentEvent,
-        event_start_date: currentEvent.event_start_date,
-        event_end_date: currentEvent.event_end_date,
-      });
+    if (open) {
+      if (currentEvent) {
+        setFormData({
+          ...currentEvent,
+          event_start_date: currentEvent.event_start_date,
+          event_end_date: currentEvent.event_end_date,
+        });
+      } else {
+        cleanFormData();
+      }
     }
-  }, [currentEvent]);
+  }, [open, currentEvent]);
 
   const handleChange = (field, value) => {
     setFormData((prev) => {
@@ -84,14 +105,16 @@ const EditEventDialog = ({
       if (currentEvent) {
         await updateEvent(tripId, currentEvent.event_id, formData);
       } else {
-        await addEvent(tripId, formData);
+        await addEvent(tripId, userData.user_id, formData);
       }
-      await getEvents(tripId);
+      await getEvents(userData.user_id);
       onClose();
       enqueueSnackbar(`Event ${currentEvent ? 'updated' : 'created'}!`, {
         variant: 'success',
       });
     } catch (error) {
+      console.log(error);
+
       enqueueSnackbar('Error saving event', { variant: 'error' });
     }
   };

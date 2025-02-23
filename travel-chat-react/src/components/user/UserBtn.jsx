@@ -2,33 +2,56 @@ import React, { useEffect } from 'react';
 import Login from './Login';
 import { useUserStore } from '../../../store/userStore';
 import { getUserData, logOutUser } from '../../../utils/userHandler';
-import { Button, Typography, Box } from '@mui/material';
 import { useChatsStore } from '../../../store/chatsStore';
+import { useDataStore } from '../../../store/dataStore';
 import { useSnackbar } from 'notistack';
+import { Box, Button, Typography } from '@mui/material';
 
+/**
+ * User Button Component.
+ * Handles user authentication, logout, and welcome message.
+ */
 const UserBtn = () => {
-  // global state
+  // Global state
   const { userData, setUserData, clearUserData } = useUserStore();
-  const { getUserConversations } = useChatsStore();
-  // alerts
+  const { getUserConversations, setConversations } = useChatsStore();
+  const { setTrips, getTrips, setEvents, getEvents } = useDataStore();
   const { enqueueSnackbar } = useSnackbar();
 
+  /**
+   * Cleans up user-related data (conversations, trips, events).
+   */
+  const cleanData = () => {
+    setUserData(null);
+    clearUserData();
+    setConversations([]);
+    setTrips([]);
+    setEvents([]);
+  };
+
+  /**
+   * Fetches and sets user data on component mount.
+   */
   useEffect(() => {
     const fetchUserData = async () => {
       try {
         const userData = await getUserData();
         if (userData) {
           setUserData(userData);
-          getUserConversations(userData.user_id);
+          await Promise.all([
+            getUserConversations(userData.user_id),
+            getTrips(userData.user_id),
+            getEvents(userData.user_id),
+          ]);
           enqueueSnackbar(`Welcome ${userData.user_name}!`, {
             variant: 'success',
           });
         } else {
-          clearUserData();
+          cleanData();
         }
       } catch (error) {
-        console.error('Error fetching user data:', error);
-        clearUserData();
+        console.error('Error fetching user data:', error.message);
+        cleanData();
       }
     };
 
@@ -37,15 +60,18 @@ const UserBtn = () => {
     }
   }, [userData, setUserData, clearUserData]);
 
+  /**
+   * Handles user logout.
+   */
   const handleLogout = async () => {
     try {
       const logoutSuccess = await logOutUser();
       if (logoutSuccess) {
-        clearUserData();
+        cleanData();
         enqueueSnackbar('Logged out successfully', { variant: 'success' });
       }
     } catch (error) {
-      console.error('Error during logout:', error);
+      console.error('Error during logout:', error.message);
     }
   };
 

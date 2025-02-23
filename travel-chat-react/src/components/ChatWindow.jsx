@@ -1,12 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
-import {
-  Box,
-  Button,
-  TextField,
-  List,
-  ListItem,
-  Typography,
-} from '@mui/material';
+import { Box, Button, TextField, Typography } from '@mui/material';
 import { useChatsStore } from '../../store/chatsStore';
 import {
   fetchConversation,
@@ -19,11 +12,18 @@ import ReactMarkdown from 'react-markdown';
 import remarkGfm from 'remark-gfm';
 import rehypeRaw from 'rehype-raw';
 import { format } from 'date-fns';
+import { useDataStore } from '../../store/dataStore';
 
+/**
+ * Chat Window Component.
+ * Handles the chat interface, including sending/receiving messages and displaying the conversation.
+ */
 const ChatWindow = ({ paramsConversationId }) => {
   // Global state
   const { getUserConversations } = useChatsStore();
   const { userData } = useUserStore();
+  const { trips, getTrips, events, getEvents, setTrips, setEvents } =
+    useDataStore();
 
   // Local state
   const [conversationId, setConversationId] = useState(paramsConversationId);
@@ -33,18 +33,20 @@ const ChatWindow = ({ paramsConversationId }) => {
   const [conversationTitle, setConversationTitle] =
     useState('New conversation');
 
+  // Ref for scrolling to the bottom of the chat
   const messagesEndRef = useRef(null);
 
-  // Scroll to the bottom of the chat
+  /**
+   * Scrolls to the bottom of the chat.
+   */
   const scrollToBottom = () => {
     messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
   };
 
-  // Fetch messages and conversation details
+  /**
+   * Fetches messages and conversation details.
+   */
   const populateMessages = async () => {
-    if (paramsConversationId) {
-      setConversationId(paramsConversationId);
-    }
     if (!paramsConversationId) {
       setMessages([]);
       setConversationId(null);
@@ -60,73 +62,82 @@ const ChatWindow = ({ paramsConversationId }) => {
       if (conversation.trip_id) {
         setTripId(conversation.trip_id);
       }
-      if (conversation.conversation_title) {
-        setConversationTitle(conversation.conversation_title);
-      } else {
-        setConversationTitle('New conversation');
-      }
-
+      setConversationTitle(
+        conversation.conversation_title || 'New conversation'
+      );
       setMessages(fetchedMessages);
     } catch (error) {
-      console.error('Error fetching messages:', error);
+      console.error('Error fetching messages:', error.message);
     }
   };
 
+  // Fetch messages when paramsConversationId changes
   useEffect(() => {
     populateMessages();
   }, [paramsConversationId]);
 
+  // Scroll to bottom when messages change
   useEffect(() => {
     scrollToBottom();
   }, [messages]);
 
-  // Handle message sending
+  /**
+   * Handles sending a message.
+   */
   const handleSendMessage = async () => {
-    if (input.trim()) {
-      const userMessage = {
-        role: 'user',
-        content: input,
+    if (!input.trim()) return;
+
+    // Add user message to the chat
+    const userMessage = {
+      role: 'user',
+      content: input,
+      timestamp: new Date(),
+    };
+    setMessages((prevMessages) => [...prevMessages, userMessage]);
+    setInput('');
+
+    try {
+      // Send message to the server and get AI response
+      const aiResponse = await sendChatMessage(
+        userData.user_id,
+        input.trim(),
+        tripId,
+        conversationId
+      );
+
+      // Fetch trips and events when AI take actions
+      if (aiResponse.executedActions?.length > 0) {
+        console.log('update');
+        getTrips(userData.user_id);
+        getEvents(userData.user_id);
+      }
+
+      // Add AI response to the chat
+      const aiMessage = {
+        role: 'assistant',
+        content: aiResponse.message,
         timestamp: new Date(),
       };
-      setMessages((prevMessages) => [...prevMessages, userMessage]);
-      setInput('');
+      setMessages((prevMessages) => [...prevMessages, aiMessage]);
 
-      try {
-        const aiResponse = await sendChatMessage(
-          userData.user_id,
-          input.trim(),
-          tripId,
-          conversationId
-        );
+      // Update conversation ID
+      setConversationId(aiResponse.conversationId);
 
-        const aiMessage = {
-          role: 'assistant',
-          content: aiResponse.message,
-          timestamp: new Date(),
-        };
-
-        setMessages((prevMessages) => [...prevMessages, aiMessage]);
-
-        setConversationId(aiResponse.conversationId);
-
-        if (
-          aiResponse.executedActions.length > 0 ||
-          !aiResponse.conversationId
-        ) {
-          getUserConversations(userData.user_id);
-          if (aiResponse.conversationId) {
-            const updatedConversation = await fetchConversation(
-              aiResponse.conversationId
-            );
-            setConversationTitle(updatedConversation.conversation_title);
-            if (updatedConversation.trip_id) {
-              setTripId(updatedConversation.trip_id);
-            }
+      // Update conversation details if necessary
+      if (aiResponse.executedActions.length > 0 || !aiResponse.conversationId) {
+        getUserConversations(userData.user_id);
+        if (aiResponse.conversationId) {
+          const updatedConversation = await fetchConversation(
+            aiResponse.conversationId
+          );
+          setConversationTitle(updatedConversation.conversation_title);
+          if (updatedConversation.trip_id) {
+            setTripId(updatedConversation.trip_id);
           }
         }
-      } catch (error) {
-        console.error('Error sending message:', error);
       }
+    } catch (error) {
+      console.error('Error sending message:', error.message);
     }
   };
 
@@ -168,86 +179,83 @@ const ChatWindow = ({ paramsConversationId }) => {
         }}
       >
         <AnimatePresence>
-          {messages.map((message, index) => {
-            return (
-              <motion.div
-                key={index}
-                initial={{ opacity: 0, y: 10 }}
-                animate={{ opacity: 1, y: 0 }}
-                exit={{ opacity: 0, y: -10 }}
-                transition={{ duration: 0.3 }}
-                style={{
-                  alignSelf:
-                    message.role === 'user' ? 'flex-end' : 'flex-start',
-                  maxWidth: '70%',
-                  width: 'fit-content', // Add this
+          {messages.map((message, index) => (
+            <motion.div
+              key={index}
+              initial={{ opacity: 0, y: 10 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: -10 }}
+              transition={{ duration: 0.3 }}
+              style={{
+                alignSelf: message.role === 'user' ? 'flex-end' : 'flex-start',
+                maxWidth: '70%',
+                width: 'fit-content',
+              }}
+            >
+              <Box
+                sx={{
+                  padding: '0.75rem 1rem',
+                  borderRadius: '12px',
+                  backgroundColor:
+                    message.role === 'user' ? '#1976d2' : '#e0e0e0',
+                  color: message.role === 'user' ? '#fff' : '#000',
+                  boxShadow: 1,
                 }}
               >
-                <Box
-                  sx={{
-                    padding: '0.75rem 1rem',
-                    borderRadius: '12px',
-                    backgroundColor:
-                      message.role === 'user' ? '#1976d2' : '#e0e0e0',
-                    color: message.role === 'user' ? '#fff' : '#000',
-                    boxShadow: 1,
-                  }}
-                >
-                  {/* time stamp */}
-                  {message.timestamp && (
-                    <Typography
-                      variant="caption"
-                      sx={{
-                        display: 'block',
-                        textAlign: message.role === 'user' ? 'right' : 'left',
-                        color:
-                          message.role === 'user'
-                            ? 'rgba(255,255,255,0.7)'
-                            : 'rgba(0,0,0,0.5)',
-                        mt: 0.5,
-                      }}
-                    >
-                      {format(new Date(message.timestamp), 'HH:mm')}
-                    </Typography>
-                  )}
-                  {/* message */}
-                  <ReactMarkdown
-                    remarkPlugins={[remarkGfm]}
-                    rehypePlugins={[rehypeRaw]}
-                    components={{
-                      strong: ({ node, ...props }) => (
-                        <Typography
-                          component="span"
-                          sx={{ fontWeight: 'bold' }}
-                          {...props}
-                        />
-                      ),
-                      ul: ({ node, ...props }) => (
-                        <ul
-                          style={{ margin: '0.5rem 0', paddingLeft: '1.5rem' }}
-                          {...props}
-                        />
-                      ),
-                      li: ({ node, ...props }) => (
-                        <li style={{ marginBottom: '0.25rem' }}>
-                          <Typography component="span" {...props} />
-                        </li>
-                      ),
-                      p: ({ node, ...props }) => (
-                        <Typography
-                          paragraph
-                          sx={{ marginBottom: '0.5rem' }}
-                          {...props}
-                        />
-                      ),
+                {/* Timestamp */}
+                {message.timestamp && (
+                  <Typography
+                    variant="caption"
+                    sx={{
+                      display: 'block',
+                      textAlign: message.role === 'user' ? 'right' : 'left',
+                      color:
+                        message.role === 'user'
+                          ? 'rgba(255,255,255,0.7)'
+                          : 'rgba(0,0,0,0.5)',
+                      mt: 0.5,
                     }}
                   >
-                    {message.content}
-                  </ReactMarkdown>
-                </Box>
-              </motion.div>
-            );
-          })}
+                    {format(new Date(message.timestamp), 'HH:mm')}
+                  </Typography>
+                )}
+                {/* Message Content */}
+                <ReactMarkdown
+                  remarkPlugins={[remarkGfm]}
+                  rehypePlugins={[rehypeRaw]}
+                  components={{
+                    strong: ({ node, ...props }) => (
+                      <Typography
+                        component="span"
+                        sx={{ fontWeight: 'bold' }}
+                        {...props}
+                      />
+                    ),
+                    ul: ({ node, ...props }) => (
+                      <ul
+                        style={{ margin: '0.5rem 0', paddingLeft: '1.5rem' }}
+                        {...props}
+                      />
+                    ),
+                    li: ({ node, ...props }) => (
+                      <li style={{ marginBottom: '0.25rem' }}>
+                        <Typography component="span" {...props} />
+                      </li>
+                    ),
+                    p: ({ node, ...props }) => (
+                      <Typography
+                        paragraph
+                        sx={{ marginBottom: '0.5rem' }}
+                        {...props}
+                      />
+                    ),
+                  }}
+                >
+                  {message.content}
+                </ReactMarkdown>
+              </Box>
+            </motion.div>
+          ))}
         </AnimatePresence>
         <div ref={messagesEndRef} />
       </Box>

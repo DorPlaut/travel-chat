@@ -37,11 +37,27 @@ export const getEventsForUser = async (req, res) => {
 // POST controller to add event to a trip
 export const addEventToTrip = async (req, res) => {
   const { tripId } = req.params;
-  const eventData = req.body;
+  let { eventData, userId } = req.body;
+  console.log('eventData:', eventData);
 
   try {
+    // Clean eventData by removing empty values
+    eventData = Object.fromEntries(
+      Object.entries(eventData).filter(
+        ([_, value]) => value !== '' && value !== null && value !== undefined
+      )
+    );
+
+    // Ensure event_cost is a number if it exists
+    if (eventData.event_cost) {
+      eventData.event_cost = parseFloat(eventData.event_cost);
+      if (isNaN(eventData.event_cost)) {
+        return res.status(400).json({ error: 'Invalid event_cost value' });
+      }
+    }
+
     // Add event to the specified trip
-    const newEvent = await addEvent(tripId, eventData);
+    const newEvent = await addEvent(tripId, userId, eventData);
     return res.status(201).json(newEvent);
   } catch (error) {
     console.error('Error in addEvent:', error);

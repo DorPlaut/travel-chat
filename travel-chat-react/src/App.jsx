@@ -1,17 +1,24 @@
-import { BrowserRouter as Router, Route, Routes } from 'react-router-dom';
+import { BrowserRouter as Router, Route, Routes, Link } from 'react-router-dom';
+import { createTheme, ThemeProvider } from '@mui/material/styles';
+import { Box, CssBaseline, AppBar, Toolbar, Typography } from '@mui/material';
+import { SnackbarProvider } from 'notistack';
+import { useUserStore } from '../store/userStore';
+
+// Components
 import Login from './components/user/Login';
 import AuthSuccess from './AuthSuccess';
 import UserBtn from './components/user/UserBtn';
-import NewTrip from './components/NewTrip';
-import { createTheme, ThemeProvider } from '@mui/material/styles';
-import { Box, CssBaseline, AppBar, Toolbar, Typography } from '@mui/material';
 import SideDrawer from './components/SideDrawer';
+
+// Pages
 import Chat from './pages/Chat';
 import Calendar from './pages/Calendar';
 import Trips from './pages/Trips';
-import { SnackbarProvider, useSnackbar } from 'notistack';
 import TripDetailsPage from './pages/TripDetailsPage';
+import HomePage from './pages/HomePage';
+import NoAccess from './pages/NoAccess';
 
+// Theme Configuration
 const theme = createTheme({
   palette: {
     primary: {
@@ -37,7 +44,13 @@ const theme = createTheme({
   },
 });
 
+/**
+ * Main Application Component.
+ * Handles routing, theme, and overall layout.
+ */
 function App() {
+  const { userData } = useUserStore();
+
   return (
     <ThemeProvider theme={theme}>
       <CssBaseline />
@@ -47,7 +60,7 @@ function App() {
             {/* Side Drawer */}
             <SideDrawer />
 
-            {/* Main Content */}
+            {/* Main Content Area */}
             <Box
               component="main"
               sx={{
@@ -68,9 +81,16 @@ function App() {
                 <Toolbar
                   sx={{ display: 'flex', justifyContent: 'space-between' }}
                 >
-                  <Typography variant="h1" color="inherit">
-                    AI Chat Travel Planner
-                  </Typography>
+                  {/* App Title */}
+                  <Link
+                    to="/"
+                    style={{ textDecoration: 'none', color: 'inherit' }}
+                  >
+                    <Typography variant="h1" color="inherit">
+                      AI Chat Travel Planner
+                    </Typography>
+                  </Link>
+                  {/* User Button */}
                   <UserBtn />
                 </Toolbar>
               </AppBar>
@@ -83,24 +103,38 @@ function App() {
                   backgroundColor: theme.palette.background.default,
                 }}
               >
+                {!userData && <NoAccess />}
                 <Routes>
-                  <Route
-                    path="/"
-                    element={
-                      <Typography variant="h2" sx={{ textAlign: 'center' }}>
-                        Welcome to the AI Chat Travel Planner
-                      </Typography>
-                    }
-                  />
+                  {/* Public Routes */}
                   <Route path="/login" element={<Login />} />
                   <Route path="/auth-success" element={<AuthSuccess />} />
-                  <Route path="/trips" element={<Trips />} />
-                  <Route path="/trips/:tripId" element={<TripDetailsPage />} />
-                  <Route path="/trips/new" element={<NewTrip />} />
-                  <Route path="/calendar" element={<Calendar />} />
 
-                  <Route path="/chat" element={<Chat />} />
-                  <Route path="/chat/:conversationId" element={<Chat />} />
+                  {/* Protected Routes */}
+                  <Route
+                    path="/"
+                    element={userData ? <HomePage /> : <NoAccess />}
+                  />
+                  <Route
+                    path="/trips"
+                    element={userData ? <Trips /> : <NoAccess />}
+                  />
+                  <Route
+                    path="/trips/:tripId"
+                    element={userData ? <TripDetailsPage /> : <NoAccess />}
+                  />
+
+                  <Route
+                    path="/calendar"
+                    element={userData ? <Calendar /> : <NoAccess />}
+                  />
+                  <Route
+                    path="/chat"
+                    element={userData ? <Chat /> : <NoAccess />}
+                  />
+                  <Route
+                    path="/chat/:conversationId"
+                    element={userData ? <Chat /> : <NoAccess />}
+                  />
                 </Routes>
               </Box>
             </Box>

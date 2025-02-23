@@ -24,16 +24,29 @@ const EditTripDialog = ({ open, onClose, trip, userId }) => {
     trip_end_date: '',
   });
 
+  const cleanFormData = () => {
+    setFormData({
+      trip_name: '',
+      trip_destination: '',
+      trip_start_date: '',
+      trip_end_date: '',
+    });
+  };
+
   useEffect(() => {
-    if (trip) {
-      setFormData({
-        trip_name: trip.trip_name,
-        trip_destination: trip.trip_destination,
-        trip_start_date: trip.trip_start_date,
-        trip_end_date: trip.trip_end_date,
-      });
+    if (open) {
+      if (trip) {
+        setFormData({
+          trip_name: trip.trip_name,
+          trip_destination: trip.trip_destination,
+          trip_start_date: trip.trip_start_date,
+          trip_end_date: trip.trip_end_date,
+        });
+      } else {
+        cleanFormData();
+      }
     }
-  }, [trip]);
+  }, [open, trip]);
 
   const handleSubmit = async () => {
     try {

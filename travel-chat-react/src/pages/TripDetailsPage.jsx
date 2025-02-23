@@ -18,24 +18,43 @@ import EditEventDialog from '../components/trips/EditEventDialog';
 import { useUserStore } from '../../store/userStore';
 import { format, parse } from 'date-fns';
 import SearchFilters from '../components/trips/SearchFilters';
+import { useChatsStore } from '../../store/chatsStore';
 
 const TripDetailsPage = () => {
   const { tripId } = useParams();
   const navigate = useNavigate();
   const { enqueueSnackbar } = useSnackbar();
   const { userData } = useUserStore();
-  const { trips, getTrips, events, getEvents } = useDataStore();
+  const { trips, getTrips, events, getEvents, setTrips, setEvents } =
+    useDataStore();
+  const { getUserConversations } = useChatsStore();
   const [editOpen, setEditOpen] = useState(false);
   const [selectedEvent, setSelectedEvent] = useState(null);
   const [currentTrip, setCurrentTrip] = useState('');
   const [tripEvents, setTripEvents] = useState([]);
+  const [currentFilters, setCurrentFilters] = useState({
+    search: '',
+    type: '',
+    date: null,
+  });
 
-  useEffect(() => {
+  const handleData = () => {
     if (userData?.user_id) {
       getTrips(userData.user_id);
       getEvents(userData.user_id);
+      getUserConversations(userData.user_id);
+    } else {
+      setTrips([]);
+      setEvents([]);
     }
+  };
+  //   use effect
+  useEffect(() => {
+    handleData;
   }, [userData]);
+  useEffect(() => {
+    handleData;
+  }, []);
 
   useEffect(() => {
     if (trips.length > 0) {
@@ -43,20 +62,6 @@ const TripDetailsPage = () => {
       setCurrentTrip(currentTrip);
     }
   }, [trips]);
-
-  useEffect(() => {
-    if (currentTrip?.trip_id) {
-      const tripEvents = events.filter(
-        (e) => e.trip_id === currentTrip.trip_id
-      );
-      tripEvents.sort((a, b) => {
-        const dateA = new Date(`${a.event_start_date} ${a.event_start_time}`);
-        const dateB = new Date(`${b.event_start_date} ${b.event_start_time}`);
-        return dateA - dateB;
-      });
-      setTripEvents(tripEvents);
-    }
-  }, [currentTrip, events]);
 
   // Handle search and filter
   const filterEvents = (events, filters) => {
@@ -84,7 +89,7 @@ const TripDetailsPage = () => {
     });
   };
 
-  // Update your tripEvents state handling
+  // Update  tripEvents state handling
   const [filteredEvents, setFilteredEvents] = useState([]);
 
   useEffect(() => {
@@ -101,6 +106,10 @@ const TripDetailsPage = () => {
       setFilteredEvents(tripEvents);
     }
   }, [currentTrip, events]);
+
+  useEffect(() => {
+    setFilteredEvents(filterEvents(tripEvents, currentFilters));
+  }, [tripEvents, currentFilters]);
 
   //  Create section deviders
   const groupedEvents = filteredEvents.reduce((acc, event) => {
@@ -157,13 +166,17 @@ const TripDetailsPage = () => {
           <SearchFilters
             currentTrip={currentTrip}
             onFilterChange={(filters) => {
-              setFilteredEvents(filterEvents(tripEvents, filters));
+              // setFilteredEvents(filterEvents(tripEvents, filters));
+              setCurrentFilters(filters);
             }}
           />
           <Button
             variant="contained"
             startIcon={<AddIcon />}
-            onClick={() => setEditOpen(true)}
+            onClick={() => {
+              setSelectedEvent(null);
+              setEditOpen(true);
+            }}
           >
             Add Event
           </Button>

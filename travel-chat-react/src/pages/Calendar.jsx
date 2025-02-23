@@ -7,20 +7,24 @@ import { useDataStore } from '../../store/dataStore';
 const Calendar = () => {
   // global state
   const { userData } = useUserStore();
-  const { getTrips, getEvents } = useDataStore();
+  const { getTrips, getEvents, setTrips, setEvents } = useDataStore();
 
   //   use effect
-  useEffect(() => {
+  const handleData = () => {
     if (userData?.user_id) {
       getTrips(userData.user_id);
       getEvents(userData.user_id);
+    } else {
+      setTrips([]);
+      setEvents([]);
     }
+  };
+  //   use effect
+  useEffect(() => {
+    handleData;
   }, [userData]);
   useEffect(() => {
-    if (userData?.user_id) {
-      getTrips(userData.user_id);
-      getEvents(userData.user_id);
-    }
+    handleData;
   }, []);
 
   return <CalendarComponent />;

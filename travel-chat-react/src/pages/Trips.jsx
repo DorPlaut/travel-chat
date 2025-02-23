@@ -11,24 +11,31 @@ import AddIcon from '@mui/icons-material/Add';
 import TripCard from '../components/trips/TripCard';
 import EditTripDialog from '../components/trips/EditTripDialog';
 import { deleteTrip } from '../../utils/tripsHandler';
+import { useChatsStore } from '../../store/chatsStore';
 
 const Trips = () => {
   // global state
   const { userData } = useUserStore();
-  const { trips, getTrips, events, getEvents } = useDataStore();
+  const { trips, getTrips, events, getEvents, setTrips, setEvents } =
+    useDataStore();
+  const { getUserConversations } = useChatsStore();
 
+  const handleData = () => {
+    if (userData?.user_id) {
+      getTrips(userData.user_id);
+      getEvents(userData.user_id);
+      getUserConversations(userData.user_id);
+    } else {
+      setTrips([]);
+      setEvents([]);
+    }
+  };
   //   use effect
   useEffect(() => {
-    if (userData?.user_id) {
-      getTrips(userData.user_id);
-      getEvents(userData.user_id);
-    }
+    handleData;
   }, [userData]);
   useEffect(() => {
-    if (userData?.user_id) {
-      getTrips(userData.user_id);
-      getEvents(userData.user_id);
-    }
+    handleData;
   }, []);
 
   const [selectedTrip, setSelectedTrip] = useState(null);
@@ -54,7 +61,10 @@ const Trips = () => {
           <Button
             variant="contained"
             startIcon={<AddIcon />}
-            onClick={() => setEditOpen(true)}
+            onClick={() => {
+              setSelectedTrip(null);
+              setEditOpen(true);
+            }}
           >
             New Trip
           </Button>
@@ -62,8 +72,6 @@ const Trips = () => {
 
         <Grid container spacing={3}>
           {trips.map((trip) => {
-            console.log(trip);
-
             return (
               <Grid item xs={12} sm={6} md={4} key={trip.trip_id}>
                 <TripCard

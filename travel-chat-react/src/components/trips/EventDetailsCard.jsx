@@ -26,6 +26,7 @@ import {
 import { deleteEvent } from '../../../utils/eventsHandler';
 import { useDataStore } from '../../../store/dataStore';
 import { useUserStore } from '../../../store/userStore';
+import { useNavigate } from 'react-router-dom';
 
 const EventDetailsCard = ({ event, tripId, onEdit }) => {
   const { userData } = useUserStore();
@@ -33,6 +34,8 @@ const EventDetailsCard = ({ event, tripId, onEdit }) => {
   const { enqueueSnackbar } = useSnackbar();
   const [anchorEl, setAnchorEl] = useState(null);
   const open = Boolean(anchorEl);
+
+  const navigate = useNavigate();
 
   const handleMenuOpen = (e) => setAnchorEl(e.currentTarget);
   const handleMenuClose = () => setAnchorEl(null);
@@ -81,7 +84,10 @@ const EventDetailsCard = ({ event, tripId, onEdit }) => {
             <Button
               startIcon={<CalendarMonthOutlinedIcon />}
               variant="outlined"
-              onClick={() => {}}
+              onClick={() => {
+                const startDate = new Date(event.event_start_date);
+                navigate(`/calendar?date=${startDate}`);
+              }}
               sx={{
                 position: 'absolute',
                 right: '1rem',

@@ -1,5 +1,5 @@
 // CalendarComponent.jsx
-import React, { useState, useCallback } from 'react';
+import React, { useState, useCallback, useEffect } from 'react';
 import {
   Box,
   Typography,
@@ -20,6 +20,7 @@ import DayView from './DayView';
 import YearView from './YearView';
 import { useUserStore } from '../../../store/userStore';
 import { useDataStore } from '../../../store/dataStore';
+import { useSearchParams } from 'react-router-dom';
 
 const CalendarComponent = () => {
   // global state
@@ -30,6 +31,17 @@ const CalendarComponent = () => {
   const [viewMode, setViewMode] = useState('month');
   const [currentDate, setCurrentDate] = useState(new Date());
   const isMobile = useMediaQuery((theme) => theme.breakpoints.down('sm'));
+
+  // searchg params
+  const [searchParams, setSearchParams] = useSearchParams();
+
+  useEffect(() => {
+    const date = searchParams.get('date');
+    if (date) {
+      setCurrentDate(new Date(date));
+      setViewMode('day');
+    }
+  }, [searchParams]);
 
   // Memoized header date formatter
   const formatHeaderDate = useCallback(() => {

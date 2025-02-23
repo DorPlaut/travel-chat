@@ -83,6 +83,16 @@ const SearchFilters = ({ currentTrip, onFilterChange }) => {
     });
   };
 
+  // populate search terms on update
+  useEffect(() => {
+    const searchParam = searchParams.get('search');
+    updateFilters({
+      search: searchParam,
+      type: selectedType,
+      date: selectedDate,
+    });
+  }, [searchParams]);
+
   return (
     <Paper elevation={0} sx={{ p: 2, mb: 3, bgcolor: 'background.default' }}>
       <Box sx={{ display: 'flex', gap: 2, flexWrap: 'wrap' }}>
@@ -143,7 +153,7 @@ const SearchFilters = ({ currentTrip, onFilterChange }) => {
             </MenuItem>
           ))}
         </TextField>
-        <DatePicker
+        {/* <DatePicker
           value={selectedDate}
           onChange={handleDateChange}
           minDate={
@@ -179,7 +189,7 @@ const SearchFilters = ({ currentTrip, onFilterChange }) => {
                   : '',
             },
           }}
-        />
+        /> */}
 
         {(search || selectedType || selectedDate) && (
           <IconButton

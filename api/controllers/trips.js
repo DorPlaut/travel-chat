@@ -1,8 +1,10 @@
 import {
+  createConversation,
   createTrip,
   deleteTrip,
   getTripById,
   getUserTrips,
+  updateConversation,
   updateTrip,
 } from '../utils.js';
 
@@ -22,8 +24,20 @@ export const getTrips = async (req, res) => {
 export const addTrip = async (req, res) => {
   const { userId } = req.params;
   const tripData = req.body;
+
   try {
+    // create trip
     const newTrip = await createTrip(userId, tripData);
+    // create convo
+    const newConversation = await createConversation(userId);
+    // set the conversation trip_id and conversation_title
+    const updatedConversation = await updateConversation(
+      newConversation.conversation_id,
+      {
+        trip_id: newTrip.trip_id,
+        conversation_title: newTrip.trip_name,
+      }
+    );
     res.status(201).json(newTrip);
   } catch (error) {
     console.error('Error adding trip:', error);
