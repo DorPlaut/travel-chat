@@ -1,0 +1,38 @@
+{
+  "rewrites": [
+    {
+      "source": "/(.*)",
+      "destination": "/index.html"
+    }
+  ],
+  "routes": [
+    {
+      "src": "/login",
+      "dest": "/index.html"
+    },
+    {
+      "src": "/auth-success",
+      "dest": "/index.html"
+    },
+    {
+      "src": "/trips",
+      "dest": "/index.html"
+    },
+    {
+      "src": "/trips/(.*)",
+      "dest": "/index.html"
+    },
+    {
+      "src": "/calendar",
+      "dest": "/index.html"
+    },
+    {
+      "src": "/chat",
+      "dest": "/index.html"
+    },
+    {
+      "src": "/chat/(.*)",
+      "dest": "/index.html"
+    }
+  ]
+}
