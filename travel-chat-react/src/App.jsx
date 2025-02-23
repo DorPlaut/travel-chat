@@ -1,6 +1,13 @@
 import { BrowserRouter as Router, Route, Routes, Link } from 'react-router-dom';
 import { createTheme, ThemeProvider } from '@mui/material/styles';
-import { Box, CssBaseline, AppBar, Toolbar, Typography } from '@mui/material';
+import {
+  Box,
+  CssBaseline,
+  AppBar,
+  Toolbar,
+  Typography,
+  IconButton,
+} from '@mui/material';
 import { SnackbarProvider } from 'notistack';
 import { useUserStore } from '../store/userStore';
 
@@ -76,21 +83,55 @@ function App() {
                 position="sticky"
                 elevation={1}
                 color="primary"
-                sx={{ height: '3.5rem' }}
+                sx={{
+                  height: '3.5rem',
+                }}
               >
                 <Toolbar
-                  sx={{ display: 'flex', justifyContent: 'space-between' }}
+                  sx={{
+                    display: 'flex',
+                    justifyContent: 'space-between',
+                    alignItems: 'flex-start',
+                    gap: 2,
+                    pt: 0.75,
+                    px: { xs: 1, sm: 2 },
+                    maxHeight: '3.5rem !important',
+                    height: '3.5rem !important',
+                    // background: 'red',
+                  }}
                 >
-                  {/* App Title */}
-                  <Link
-                    to="/"
-                    style={{ textDecoration: 'none', color: 'inherit' }}
-                  >
-                    <Typography variant="h1" color="inherit">
+                  {/* Logo and Title */}
+                  <Box display="flex" alignItems="center" gap={1}>
+                    {/* Logo */}
+                    <Link to="/">
+                      <IconButton sx={{ p: 0 }}>
+                        <img
+                          src="/logo.svg"
+                          alt="App Logo"
+                          style={{
+                            width: 42,
+                            height: 42,
+                            filter:
+                              'drop-shadow(0 0px 3px rgba(255, 255, 255, 0.19))',
+                          }}
+                        />
+                      </IconButton>
+                    </Link>
+
+                    {/* App Title - Hidden on mobile */}
+                    <Typography
+                      variant="h6"
+                      sx={{
+                        display: { xs: 'none', sm: 'block' },
+                        fontWeight: 600,
+                        color: 'inherit',
+                      }}
+                    >
                       AI Chat Travel Planner
                     </Typography>
-                  </Link>
-                  {/* User Button */}
+                  </Box>
+
+                  {/* User Button Component */}
                   <UserBtn />
                 </Toolbar>
               </AppBar>

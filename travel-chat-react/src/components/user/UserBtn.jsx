@@ -5,13 +5,17 @@ import { getUserData, logOutUser } from '../../../utils/userHandler';
 import { useChatsStore } from '../../../store/chatsStore';
 import { useDataStore } from '../../../store/dataStore';
 import { useSnackbar } from 'notistack';
-import { Box, Button, Typography } from '@mui/material';
+import { Box, Button, Typography, useMediaQuery } from '@mui/material';
+
+const serveUrl = import.meta.env.VITE_SERVER_URL;
 
 /**
  * User Button Component.
  * Handles user authentication, logout, and welcome message.
  */
 const UserBtn = () => {
+  const isMobile = useMediaQuery('(max-width:600px)');
+
   // Global state
   const { userData, setUserData, clearUserData } = useUserStore();
   const { getUserConversations, setConversations } = useChatsStore();
@@ -83,14 +87,41 @@ const UserBtn = () => {
   };
 
   return userData ? (
-    <Box display="flex" alignItems="center" gap={2}>
-      <Typography variant="h6">Welcome, {userData.user_name}</Typography>
-      <Button variant="contained" color="secondary" onClick={handleLogout}>
-        Logout
+    <Box display="flex" alignItems="center" gap={1} height="75%">
+      {!isMobile && (
+        <Typography variant="body2" sx={{ fontWeight: 500 }}>
+          Hi, {userData.user_name}
+        </Typography>
+      )}
+      <Button
+        variant="contained"
+        color="secondary"
+        onClick={handleLogout}
+        size={isMobile ? 'small' : 'medium'}
+        sx={{
+          minWidth: 'auto',
+          px: isMobile ? 1.5 : 2,
+        }}
+      >
+        {isMobile ? 'Logout' : 'Sign Out'}
       </Button>
     </Box>
   ) : (
-    <Login />
+    <Box display="flex" alignItems="center" gap={1}>
+      {!isMobile && <Typography variant="body2">Get Started</Typography>}
+      <Button
+        variant="contained"
+        color="secondary"
+        href={`${serveUrl}/api/auth/google`}
+        size={isMobile ? 'small' : 'medium'}
+        sx={{
+          minWidth: 'auto',
+          px: isMobile ? 1.5 : 2,
+        }}
+      >
+        {isMobile ? 'Login' : 'Continue with Google'}
+      </Button>
+    </Box>
   );
 };
 
