@@ -107,7 +107,7 @@ const UserBtn = () => {
       </Button>
     </Box>
   ) : (
-    <Box display="flex" alignItems="center" gap={1}>
+    <Box display="flex" alignItems="center" gap={1} height="75%">
       {!isMobile && <Typography variant="body2">Get Started</Typography>}
       <Button
         variant="contained"
