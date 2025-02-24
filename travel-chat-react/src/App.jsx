@@ -144,7 +144,7 @@ function App() {
                   backgroundColor: theme.palette.background.default,
                 }}
               >
-                {!userData && <NoAccess />}
+                {/* {!userData && <NoAccess />} */}
                 <Routes>
                   {/* Public Routes */}
                   <Route path="/login" element={<Login />} />
