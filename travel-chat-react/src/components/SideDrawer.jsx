@@ -20,7 +20,7 @@ import ChatBubbleOutlineIcon from '@mui/icons-material/ChatBubbleOutline';
 import AddCommentOutlinedIcon from '@mui/icons-material/AddCommentOutlined';
 import HikingOutlinedIcon from '@mui/icons-material/HikingOutlined';
 import CalendarMonthOutlinedIcon from '@mui/icons-material/CalendarMonthOutlined';
-import { Link } from 'react-router-dom';
+import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { useSnackbar } from 'notistack';
 import { deleteConversation } from '../../utils/chatHandler';
 import { useUserStore } from '../../store/userStore';
@@ -32,6 +32,9 @@ import { useDataStore } from '../../store/dataStore';
  * Handles the sidebar navigation, including conversations, trips, and calendar links.
  */
 const SideDrawer = () => {
+  // Router
+  const navigate = useNavigate();
+  const location = useLocation();
   // Global state
   const { conversations, getUserConversations } = useChatsStore();
   const { userData } = useUserStore();
@@ -98,6 +101,12 @@ const SideDrawer = () => {
                   await deleteConversation(conversationId);
                   closeSnackbar(snackbarId);
                   await handleData();
+
+                  // Check if we're on the specific conversation route
+                  if (location.pathname.includes(`/chat/${conversationId}`)) {
+                    navigate('/chat');
+                  }
+
                   enqueueSnackbar('Conversation deleted successfully', {
                     variant: 'success',
                   });

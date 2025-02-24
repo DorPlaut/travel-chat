@@ -7,6 +7,7 @@ import {
   Toolbar,
   Typography,
   IconButton,
+  useMediaQuery,
 } from '@mui/material';
 import { SnackbarProvider } from 'notistack';
 import { useUserStore } from '../store/userStore';
@@ -106,13 +107,12 @@ function App() {
                     <Link to="/">
                       <IconButton sx={{ p: 0 }}>
                         <img
-                          src="/logo.svg"
+                          src="/logo2.svg"
                           alt="App Logo"
                           style={{
                             width: 42,
                             height: 42,
-                            filter:
-                              'drop-shadow(0 0px 3px rgba(255, 255, 255, 0.19))',
+                            filter: 'blur(0.3px)',
                           }}
                         />
                       </IconButton>

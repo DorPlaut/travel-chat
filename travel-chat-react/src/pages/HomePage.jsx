@@ -7,6 +7,7 @@ import {
   Stack,
   Card,
   CardContent,
+  useMediaQuery,
 } from '@mui/material';
 import { motion } from 'framer-motion';
 import { useUserStore } from '../../store/userStore';
@@ -14,6 +15,11 @@ import { useUserStore } from '../../store/userStore';
 const HomePage = () => {
   const theme = useTheme();
   const { userData } = useUserStore();
+
+  /**
+   * Toggles the drawer's open/close state on mobile devices.
+   */
+  const isMobile = useMediaQuery('(max-width:600px)', { noSsr: true });
 
   const containerVariants = {
     hidden: { opacity: 0 },
@@ -43,6 +49,29 @@ const HomePage = () => {
       }}
     >
       <motion.div variants={containerVariants} initial="show" animate="show">
+        <Box>
+          <img
+            src="/logo2.svg"
+            alt="App Logo"
+            style={{
+              width: isMobile ? 150 : 300,
+              height: isMobile ? 150 : 300,
+              scale: '1.3',
+              filter: 'blur(0.3px)',
+              marginTop: isMobile ? 120 : 0,
+            }}
+          />
+          <Typography
+            variant="h4"
+            sx={{
+              mt: 2,
+              fontWeight: 600,
+              color: theme.palette.text.primary,
+            }}
+          >
+            AI Chat Travel Planner
+          </Typography>
+        </Box>
         <Grid container spacing={4}>
           <Grid item xs={12} md={8}>
             <motion.div variants={itemVariants}>
@@ -76,13 +105,6 @@ const HomePage = () => {
                   </Button>
                 </CardContent>
               </Card>
-            </motion.div>
-
-            <motion.div variants={itemVariants} style={{ marginTop: 32 }}>
-              <Typography variant="h6" sx={{ fontWeight: 600, mb: 2 }}>
-                Recent Trips
-              </Typography>
-              {/* Add your recent chats list here */}
             </motion.div>
           </Grid>
 
