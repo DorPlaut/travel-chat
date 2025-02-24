@@ -10,6 +10,8 @@ import {
   useMediaQuery,
   List,
   ListItem,
+  Paper,
+  Container,
 } from '@mui/material';
 import { motion } from 'framer-motion';
 import { useUserStore } from '../../store/userStore';
@@ -45,15 +47,27 @@ const HomePage = () => {
   };
 
   return (
-    <Box
+    // <Box
+    //   sx={{
+    //     // display: 'flex',
+    //     // flexDirection: 'column',
+    //     // alignItems: 'center',
+    //     // justifyContent: 'center',
+    //     height: '100%',
+    //     textAlign: 'center',
+    //     p: 3,
+    //   }}
+    // >
+    <Container
+      maxWidth="md"
       sx={{
+        py: 4,
         display: 'flex',
         flexDirection: 'column',
         alignItems: 'center',
         justifyContent: 'center',
-        height: '100%',
         textAlign: 'center',
-        p: 3,
+        px: 3,
       }}
     >
       <motion.div variants={containerVariants} initial="show" animate="show">
@@ -66,7 +80,6 @@ const HomePage = () => {
               height: isMobile ? 150 : 300,
               scale: '1.3',
               filter: 'blur(0.3px)',
-              marginTop: isMobile ? 120 : 0,
             }}
           />
           <Typography
@@ -184,10 +197,33 @@ const HomePage = () => {
                 </CardContent>
               </Card>
             </motion.div>
+            <motion.div variants={itemVariants}>
+              <Card
+                sx={{ borderRadius: 3, boxShadow: theme.shadows[2], mt: 3 }}
+              >
+                <CardContent>
+                  <Typography
+                    variant="body1"
+                    gutterBottom
+                    sx={{ fontWeight: 600 }}
+                  >
+                    Build by Dor Plaut
+                  </Typography>
+                  <Button
+                    variant="outlined"
+                    href="https://www.dorplaut.com/"
+                    target="_blank"
+                  >
+                    Visit my portfolio
+                  </Button>
+                </CardContent>
+              </Card>
+            </motion.div>
           </Grid>
         </Grid>
       </motion.div>
-    </Box>
+      {/* </Box> */}
+    </Container>
   );
 };
 

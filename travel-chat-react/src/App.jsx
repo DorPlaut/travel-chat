@@ -120,7 +120,7 @@ function App() {
 
                     {/* App Title - Hidden on mobile */}
                     <Typography
-                      variant="h6"
+                      variant="h1"
                       sx={{
                         display: { xs: 'none', sm: 'block' },
                         fontWeight: 600,
