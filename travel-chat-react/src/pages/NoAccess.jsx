@@ -1,4 +1,11 @@
-import { Box, Button, Typography, useTheme } from '@mui/material';
+import {
+  Box,
+  Button,
+  Container,
+  Typography,
+  useMediaQuery,
+  useTheme,
+} from '@mui/material';
 import { motion } from 'framer-motion';
 import React from 'react';
 const serveUrl = import.meta.env.VITE_SERVER_URL;
@@ -9,17 +16,22 @@ const NoAccess = () => {
     // Redirect to the backend to start the OAuth flow
     window.location.href = `${serveUrl}/api/auth/google`;
   };
+  /**
+   * Toggles the drawer's open/close state on mobile devices.
+   */
+  const isMobile = useMediaQuery('(max-width:600px)', { noSsr: true });
 
   return (
-    <Box
+    <Container
+      maxWidth="md"
       sx={{
+        py: 4,
         display: 'flex',
         flexDirection: 'column',
         alignItems: 'center',
         justifyContent: 'center',
-        height: '100%',
         textAlign: 'center',
-        p: 3,
+        px: 3,
       }}
     >
       <motion.div
@@ -27,6 +39,16 @@ const NoAccess = () => {
         animate={{ opacity: 1, scale: 1 }}
         transition={{ duration: 0.3 }}
       >
+        <img
+          src="/logo2.svg"
+          alt="App Logo"
+          style={{
+            width: isMobile ? 150 : 300,
+            height: isMobile ? 150 : 300,
+            scale: '1.3',
+            filter: 'blur(0.3px)',
+          }}
+        />
         <Typography variant="h4" gutterBottom sx={{ fontWeight: 600, mb: 2 }}>
           Welcome to AI Chat Travel Planner
         </Typography>
@@ -51,7 +73,7 @@ const NoAccess = () => {
           Login to Continue
         </Button>
       </motion.div>
-    </Box>
+    </Container>
   );
 };
 
