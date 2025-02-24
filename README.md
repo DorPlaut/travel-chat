@@ -2,6 +2,8 @@
 
 ## Project Overview
 
+### [Live Demo](https://travel-chat-eight.vercel.app/)
+
 The **AI Chat Travel Planner** is an intelligent trip planning application that utilizes the power of LLMs to create a unique user experience for booking and managing travel itineraries. Users can interact with an AI chatbot that suggests locations, activities, and handles calendar bookings seamlessly. 
 
 ### **Core Features:**
