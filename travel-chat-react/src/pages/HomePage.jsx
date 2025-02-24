@@ -8,13 +8,21 @@ import {
   Card,
   CardContent,
   useMediaQuery,
+  List,
+  ListItem,
 } from '@mui/material';
 import { motion } from 'framer-motion';
 import { useUserStore } from '../../store/userStore';
+import { useDataStore } from '../../store/dataStore';
+import { useNavigate } from 'react-router-dom';
 
 const HomePage = () => {
   const theme = useTheme();
   const { userData } = useUserStore();
+  const { trips } = useDataStore();
+
+  // Router
+  const navigate = useNavigate();
 
   /**
    * Toggles the drawer's open/close state on mobile devices.
@@ -94,7 +102,7 @@ const HomePage = () => {
                   </Typography>
                   <Button
                     variant="contained"
-                    href="/chat"
+                    onClick={() => navigate(`/chat`)}
                     sx={{
                       textTransform: 'none',
                       px: 4,
@@ -105,6 +113,49 @@ const HomePage = () => {
                   </Button>
                 </CardContent>
               </Card>
+            </motion.div>
+
+            <motion.div variants={itemVariants} style={{ marginTop: 32 }}>
+              <Typography variant="h6" sx={{ fontWeight: 600, mb: 0 }}>
+                Recent Trips
+              </Typography>
+
+              {trips.length > 0 ? (
+                <List>
+                  {trips.slice(0, 2).map((trip) => (
+                    <ListItem key={trip.trip_id}>
+                      <Button
+                        variant="contained"
+                        onClick={() => navigate(`/trips/${trip.trip_id}`)}
+                        fullWidth
+                        sx={{
+                          textTransform: 'none',
+                          borderRadius: 2,
+                        }}
+                      >
+                        {trip.trip_name}
+                      </Button>
+                    </ListItem>
+                  ))}
+                  <ListItem key={'trip-list'}>
+                    <Button
+                      variant="outlined"
+                      onClick={() => navigate('/trips')}
+                      fullWidth
+                      sx={{
+                        textTransform: 'none',
+                        borderRadius: 2,
+                      }}
+                    >
+                      Go to all Trips
+                    </Button>
+                  </ListItem>
+                </List>
+              ) : (
+                <Typography variant="body1">
+                  No recent trips found. Start a new chat to get started.
+                </Typography>
+              )}
             </motion.div>
           </Grid>
 
