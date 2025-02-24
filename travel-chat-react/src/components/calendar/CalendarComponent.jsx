@@ -87,16 +87,26 @@ const CalendarComponent = () => {
   };
 
   const handleTouchEnd = (e) => {
-    if (!touchPosition) return;
-
-    const touchUp = e.changedTouches[0].clientX;
-    const deltaX = touchPosition - touchUp;
-
-    // Only trigger if swipe distance is more than 50px
-    if (Math.abs(deltaX) > 50) {
-      handleDateChange(deltaX > 0 ? 1 : -1);
+    if (!touchPosition) {
+      return;
     }
 
+    const touchUp = e.changedTouches[0].clientX;
+    const difference = touchPosition - touchUp;
+
+    // Minimum swipe distance threshold (in pixels)
+    const minSwipeDistance = 50;
+
+    if (Math.abs(difference) < minSwipeDistance) {
+      return;
+    }
+
+    // Positive difference means swipe left (next)
+    // Negative difference means swipe right (previous)
+    const direction = difference > 0 ? 1 : -1;
+    handleDateChange(direction);
+
+    // Reset touch position
     setTouchPosition(null);
   };
 
@@ -182,7 +192,7 @@ const CalendarComponent = () => {
               position: 'relative',
               height: 'calc(100% - 4rem)',
             }}
-            onTuchStart={handleTouchStart}
+            onTouchStart={handleTouchStart}
             onTouchEnd={handleTouchEnd}
           >
             {viewMode === 'month' && (
