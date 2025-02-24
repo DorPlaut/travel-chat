@@ -27,7 +27,8 @@ const CalendarComponent = () => {
   const { userData } = useUserStore();
   const { trips, setTrips, getTrips, events, setEvents, getEvents } =
     useDataStore();
-
+  // local state
+  const [touchPosition, setTouchPosition] = useState(null);
   const [viewMode, setViewMode] = useState('month');
   const [currentDate, setCurrentDate] = useState(new Date());
   const isMobile = useMediaQuery((theme) => theme.breakpoints.down('sm'));
@@ -78,6 +79,26 @@ const CalendarComponent = () => {
   const handleViewChange = useCallback((event, newViewMode) => {
     if (newViewMode) setViewMode(newViewMode);
   }, []);
+
+  // Handle swipe on mobile
+  const handleTouchStart = (e) => {
+    const touchDown = e.touches[0].clientX;
+    setTouchPosition(touchDown);
+  };
+
+  const handleTouchEnd = (e) => {
+    if (!touchPosition) return;
+
+    const touchUp = e.changedTouches[0].clientX;
+    const deltaX = touchPosition - touchUp;
+
+    // Only trigger if swipe distance is more than 50px
+    if (Math.abs(deltaX) > 50) {
+      handleDateChange(deltaX > 0 ? 1 : -1);
+    }
+
+    setTouchPosition(null);
+  };
 
   return (
     <Paper elevation={3} sx={{ p: 2, height: '100%', overflow: 'hidden' }}>
@@ -161,6 +182,8 @@ const CalendarComponent = () => {
               position: 'relative',
               height: 'calc(100% - 4rem)',
             }}
+            onTuchStart={handleTouchStart}
+            onTouchEnd={handleTouchEnd}
           >
             {viewMode === 'month' && (
               <MonthView
