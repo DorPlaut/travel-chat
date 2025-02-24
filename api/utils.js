@@ -568,6 +568,23 @@ export const removeConversation = async (conversationId) => {
   try {
     const conversation = await getConversationById(conversationId);
     const tripId = conversation.trip_id;
+    // Spacial use cases
+    // # if there is no trip assosiated with the convo
+
+    if (!tripId) {
+      // Delete messages
+      const { error: messagesError } = await supabase
+        .from('chat_messages')
+        .delete()
+        .eq('conversation_id', conversationId);
+      if (messagesError) throw messagesError;
+      // Delete conversation
+      await supabase
+        .from('conversations')
+        .delete()
+        .eq('conversation_id', conversationId);
+      return true;
+    }
     const events = await getTripEvents(tripId);
 
     // Step 1: Delete the conversation messages

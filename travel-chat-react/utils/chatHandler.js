@@ -112,7 +112,7 @@ export const sendChatMessage = async (
     return response.data;
   } catch (error) {
     console.error('Error sending chat message:', error.message);
-    return null;
+    return false;
   }
 };
 

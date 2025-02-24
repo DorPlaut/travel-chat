@@ -36,15 +36,10 @@ const UserBtn = () => {
   /**
    * Fetches and sets user data on component mount.
    */
-  const handleData = async () => {
-    if (userData?.user_id) {
-      await getTrips(userData.user_id);
-      await getEvents(userData.user_id);
-      await getUserConversations(userData.user_id);
-    } else {
-      setTrips([]);
-      setEvents([]);
-    }
+  const handleData = async (id) => {
+    await getTrips(id);
+    await getEvents(id);
+    await getUserConversations(id);
   };
 
   useEffect(() => {
@@ -53,7 +48,7 @@ const UserBtn = () => {
         const userData = await getUserData();
         if (userData) {
           setUserData(userData);
-          await handleData();
+          await handleData(userData.user_id);
           enqueueSnackbar(`Welcome ${userData.user_name}!`, {
             variant: 'success',
           });

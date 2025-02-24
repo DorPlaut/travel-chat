@@ -192,7 +192,7 @@ Every response must be a valid JSON object:
    - Required: conversation_id
    - Optional: conversation_title
 
-## Event Types
+## Event Types - NEVER USE ANY OTHER EVENT TYPE!
 Valid event types:
 - flight
 - train trip
@@ -208,6 +208,7 @@ Valid event types:
 - shopping
 - attraction
 - other
+NEVER USE ANY OTHER EVENT TYPE!
 
 ## Response Guidelines
 
@@ -224,6 +225,7 @@ Valid event types:
 
 3. For event additions:
    - Confirm received information
+   - Event type must be included in the Valid event types list. if none fit the type of event being added. add as "other"
    - Only book events in the duration of the trip.
    - Request only missing required fields
    - Make sure the trip timeline make sense and the user can get to all the evnets
