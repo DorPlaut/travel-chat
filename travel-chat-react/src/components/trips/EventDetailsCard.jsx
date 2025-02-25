@@ -81,22 +81,6 @@ const EventDetailsCard = ({ event, tripId, onEdit }) => {
             <IconButton size="small" onClick={handleMenuOpen}>
               <MoreVertIcon fontSize="small" />
             </IconButton>
-            <Button
-              startIcon={<CalendarMonthOutlinedIcon />}
-              variant="outlined"
-              onClick={() => {
-                const startDate = new Date(event.event_start_date);
-                navigate(`/calendar?date=${startDate}`);
-              }}
-              sx={{
-                position: 'absolute',
-                right: '1rem',
-                bottom: '1rem',
-                fontSize: '0.8rem',
-              }}
-            >
-              Show calendar
-            </Button>
           </Box>
 
           <Box sx={{ ml: 4.5, mt: 1 }}>
@@ -117,6 +101,18 @@ const EventDetailsCard = ({ event, tripId, onEdit }) => {
                 {event.event_description}
               </Typography>
             )}
+          </Box>
+          <Box sx={{ textAlign: 'right', m: 0.7, mr: -0.5 }}>
+            <Button
+              startIcon={<CalendarMonthOutlinedIcon />}
+              variant="outlined"
+              onClick={() => {
+                const startDate = new Date(event.event_start_date);
+                navigate(`/calendar?date=${startDate}`);
+              }}
+            >
+              Show calendar
+            </Button>
           </Box>
         </CardContent>
 

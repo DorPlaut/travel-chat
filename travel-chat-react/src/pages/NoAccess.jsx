@@ -26,11 +26,13 @@ const NoAccess = () => {
       maxWidth="md"
       sx={{
         py: 4,
-        display: 'flex',
-        flexDirection: 'column',
-        alignItems: 'center',
-        justifyContent: 'center',
-        textAlign: 'center',
+        // display: 'flex',
+        // flexDirection: 'column',
+        // alignItems: 'center',
+        // justifyContent: 'center',
+        // textAlign: 'center',
+        height: '100%',
+        // textAlign: 'center',
         px: 3,
       }}
     >
@@ -38,6 +40,14 @@ const NoAccess = () => {
         initial={{ opacity: 0, scale: 0.9 }}
         animate={{ opacity: 1, scale: 1 }}
         transition={{ duration: 0.3 }}
+        style={{
+          display: 'flex',
+          flexDirection: 'column',
+          alignItems: 'center',
+          justifyContent: 'center',
+          textAlign: 'center',
+          height: '100%',
+        }}
       >
         <img
           src="/logo2.svg"
@@ -49,7 +59,7 @@ const NoAccess = () => {
             filter: 'blur(0.3px)',
           }}
         />
-        <Typography variant="h4" gutterBottom sx={{ fontWeight: 600, mb: 2 }}>
+        <Typography variant="h4" gutterBottom sx={{ fontWeight: 600, m: 1 }}>
           Welcome to AI Chat Travel Planner
         </Typography>
         <Typography

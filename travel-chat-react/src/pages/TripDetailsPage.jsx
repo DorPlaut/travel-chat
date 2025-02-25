@@ -9,6 +9,7 @@ import {
   Typography,
   IconButton,
   Divider,
+  useMediaQuery,
 } from '@mui/material';
 import ArrowBackIcon from '@mui/icons-material/ArrowBack';
 import AddIcon from '@mui/icons-material/Add';
@@ -37,6 +38,11 @@ const TripDetailsPage = () => {
     type: '',
     date: null,
   });
+
+  /**
+   * Toggles the drawer's open/close state on mobile devices.
+   */
+  const isMobile = useMediaQuery('(max-width:600px)', { noSsr: true });
 
   const handleData = async () => {
     if (userData?.user_id) {
@@ -158,6 +164,7 @@ const TripDetailsPage = () => {
             justifyContent: 'space-between',
             alignItems: 'center',
             mb: 3,
+            flexDirection: isMobile ? 'column' : 'row',
           }}
         >
           <Typography variant="h6" color="text.secondary">
