@@ -84,11 +84,14 @@
 
 // start();
 
+// When using Render. use this code instead of the above code
+// Were using render and stopped using aws to avoid the cost of using aws. if we need to use aws again, we can use the above code in our ec2 instance.
+
 import express from 'express';
 import dotenv from 'dotenv';
 import cors from 'cors';
 import bodyParser from 'body-parser';
-import passport from './config/passportConfig.js'; // Initialize Passport
+import passport from './config/passportConfig.js';
 import router from './routes/route.js';
 import cookieParser from 'cookie-parser';
 
